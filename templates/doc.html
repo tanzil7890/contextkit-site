@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}{{ page.title }} · ContextKit docs{% endblock %}
+{% block description %}{{ page.description or site.description }}{% endblock %}
+{% block body_class %}docs{% endblock %}
+{% block brand_suffix %}<em>Docs</em>{% endblock %}
+{% block main %}
+      <div class="layout">
+        <aside>
+          <details class="docnav" open>
+            <summary>Docs menu</summary>
+            {% for section in nav %}
+            <p>{{ section.title }}</p>
+            {% for item in section["items"] %}
+            <a href="{{ item.page.url }}"{% if item.current %} class="current" aria-current="page"{% endif %}>{{ item.page.nav_title }}{% if item.page.unreleased %}<span class="soon">soon</span>{% endif %}</a>
+            {% if item.current and item.page.toc %}
+            <div class="toc">
+              {% for entry in item.page.toc %}
+              <a href="#{{ entry.id }}">{{ entry.name }}</a>
+              {% endfor %}
+            </div>
+            {% endif %}
+            {% endfor %}
+            {% endfor %}
+          </details>
+        </aside>
+
+        <article>
+          <h1>{{ page.title }}</h1>
+          {% if page.description %}
+          <p class="tagline">{{ page.description }}</p>
+          {% endif %}
+          {% if page.unreleased %}
+          <div class="callout unreleased">
+            <p>
+              <strong>Coming in the next release.</strong> This page covers features that are not in
+              <code>{{ page.unreleased }}</code>, the latest release on PyPI, so <code>{{ library.install }}</code> does not
+              include them yet. Watch the <a href="/changelog/">changelog</a>.
+            </p>
+          </div>
+          {% endif %}
+          {% if page.meta.get("cloud_notice") and not site.cloud_open %}
+          <div class="callout unreleased">
+            <p>
+              <strong>The hosted cloud is not open for sign-ups yet.</strong> The SDK is published so you can build
+              against it now; until the service opens, point it at a ContextKit server you run with <code>host=</code>.
+              To run memory today, use the <a href="/docs/quickstart/">library</a>.
+            </p>
+          </div>
+          {% endif %}
+          {{ body }}
+          {% if page.source %}
+          <p class="edit"><a href="https://github.com/{{ site.repo }}/edit/main/{{ page.source }}">Edit this page on GitHub</a></p>
+          {% endif %}
+          <div class="pager">
+            {% if previous %}
+            <a class="prev" href="{{ previous.url }}"><span>Previous</span>{{ previous.nav_title }}</a>
+            {% endif %}
+            {% if following %}
+            <a class="next" href="{{ following.url }}"><span>Next</span>{{ following.nav_title }}</a>
+            {% endif %}
+          </div>
+        </article>
+      </div>
+{% endblock %}

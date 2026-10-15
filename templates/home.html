@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+{% block title %}ContextKit: long-term memory for AI agents{% endblock %}
+{% block main %}
+      <main>
+        <section class="hero">
+          <h1>Long-term memory for AI agents.<br /><span>In one Python library.</span></h1>
+          <p class="lead">
+            ContextKit turns conversations into facts, keeps them per user, and hands your agent only the few that matter
+            for each request. Bring your own model and vector store.
+          </p>
+          <div class="install">
+            <code id="cmd">{{ library.install }}</code>
+            <button id="copy" type="button">Copy</button>
+          </div>
+          <p class="meta">
+            <a data-pypi="{{ library.dist }}" href="/changelog/">Latest: v{{ library.version }}</a> · Python 3.9+ ·
+            {{ site.license }}
+          </p>
+          <p class="hint">
+            {% if site.cloud_open %}
+            Rather not run it yourself? The <a href="/docs/cloud/">hosted cloud</a> gives you the same engine over HTTP.
+            {% else %}
+            A hosted cloud with a thin <a href="/docs/cloud/">Python SDK</a> is on the way; the library is the way to run it
+            today.
+            {% endif %}
+          </p>
+
+          <div class="terminal" aria-label="An agent that remembers a user's diet across sessions with ContextKit">
+            <div class="titlebar">
+              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+              <span class="title">support agent — memory for alice</span>
+            </div>
+            <div class="screen">
+              <div class="chat"><span class="you">I'm vegetarian, and I'm allergic to peanuts.</span>
+<span class="ok">✓</span> memory.add  <span class="m">2 facts · ADD · ADD</span>
+
+<span class="you">I've started eating fish again, by the way.</span>
+<span class="ok">✓</span> memory.add  <span class="m">1 fact · UPDATE "Is vegetarian"</span>
+
+<span class="m">· · ·  three weeks later, a new session  · · ·</span>
+
+<span class="you">Any idea what I could cook tonight?</span>
+<span class="ok">✓</span> memory.search  <span class="m">3 memories · graph-first</span>
+
+Grilled salmon with lemon and herbs, over a quick quinoa salad. I've left out satay sauce and peanut oil because of your allergy.
+
+<span class="ac">▣</span> Agent <span class="m">· 3 memories in context, not 3 weeks of chat</span>
+<span class="prompt"><span class="m">Message the agent…</span></span></div>
+              <div class="side">
+                <div class="sidehead">
+                  <span><strong>Memory</strong> <span class="ok">●</span> alice <span class="m">· user_id</span></span>
+                  <span class="m">search</span>
+                </div>
+                <div class="store" aria-hidden="true">
+                  <div class="q"><span class="m">query</span> Any idea what I could cook tonight?</div>
+                  <ol>
+                    <li><span class="score">0.82</span><span>Allergic to peanuts</span><span class="why">seed · closest match</span></li>
+                    <li><span class="score">0.79</span><span>Eats fish, no other meat</span><span class="why">seed · updated from “Is vegetarian”</span></li>
+                    <li><span class="score">0.61</span><span>Cooks quick weeknight dinners</span><span class="why">via <span class="lk">TOPIC_SIMILAR</span> · from a March chat</span></li>
+                  </ol>
+                </div>
+                <div class="edges" aria-hidden="true"><span>REPLY_TO</span><span>TEMPORAL_NEXT</span><span>TOPIC_SIMILAR</span></div>
+                <div class="m"><span class="ok">✓</span> seed 2 → expand 1 hop → re-rank</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="about">
+          <p class="eyebrow">This is ContextKit<span>→</span></p>
+          <p class="statement">
+            <strong>A memory layer for AI agents.</strong> Instead of resending the whole conversation every turn, your agent
+            stores facts once and pulls back <strong>only the handful that matter</strong> for the request in front of it.
+          </p>
+        </section>
+
+        <section class="features">
+          <h2>Memory your agent can actually use</h2>
+          <div class="grid">
+            <div class="card">
+              <h3>Facts, not transcripts</h3>
+              <p>
+                An LLM pulls durable facts out of each conversation and decides whether each one is new, an update, or
+                something to forget. Pass <code>infer=False</code> to store text as-is.
+              </p>
+            </div>
+            <div class="card">
+              <h3>Your models, your store</h3>
+              <p>
+                15 LLM providers, 10 embedders, and 16 vector stores, from OpenAI and Ollama to pgvector and Pinecone.
+                Qdrant on local disk runs with no servers at all.
+              </p>
+            </div>
+            <div class="card">
+              <h3>Scoped by default</h3>
+              <p>
+                Every memory belongs to a <code>user_id</code>, <code>agent_id</code>, or <code>run_id</code>, and every
+                search is narrowed to one. Add your own metadata and filter on it.
+              </p>
+            </div>
+            <div class="card">
+              <h3>Ask when and why</h3>
+              <p>
+                Add Neo4j, Memgraph, or Neptune and memories gain entities, a timeline, and cause → effect links, so
+                <code>use_tcmgm=True</code> can answer “what changed before it broke?”
+              </p>
+            </div>
+            <div class="card">
+              <h3>Privacy building blocks</h3>
+              <p>
+                Find emails, phone numbers, API keys, and anything you write a rule for, redact them before they are
+                stored, and encrypt values with AES-256-GCM or Fernet.
+              </p>
+            </div>
+            <div class="card">
+              <h3>Every change on record</h3>
+              <p>
+                Each add, update, and delete writes a history row, so <code>history(memory_id)</code> shows how a fact
+                changed over time.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {% set coming = unreleased.values() | select | list %}
+        <section class="graphs">
+          <h2>Memory as a graph<span class="badge">{{ "next release" if coming else "opt-in" }}</span></h2>
+          <p class="lead">
+            Every memory becomes a node, linked to the memories around it. Search starts from the closest matches, walks
+            the links, and re-ranks what it finds with signals that learn from feedback.
+          </p>
+          <div class="flow" role="img" aria-label="Graph-first search: seed from dense and keyword matches, expand along edges with BFS or PageRank, re-rank with graph, feedback and usage signals, return the top memories">
+            <span class="node">query</span><span class="arrow">→</span>
+            <span class="node check">seed · dense + keyword</span><span class="arrow">→</span>
+            <span class="node">expand · BFS or PageRank</span><span class="arrow">→</span>
+            <span class="node ai">re-rank · graph, feedback, usage</span><span class="arrow">→</span>
+            <span class="node out">top memories</span>
+          </div>
+          <div class="grid">
+            <div class="card">
+              <h3>Context graph</h3>
+              <p>
+                Replies, timeline order, shared documents, and similar topics are linked as you add. Snapshot the graph,
+                replay its change log, or stream changes to a webhook, SSE, or Kafka.
+              </p>
+            </div>
+            <div class="card">
+              <h3>Personalized ranking</h3>
+              <p>
+                Feedback, usage, and answers that worked before each add a weighted signal to the score. Every weight
+                starts at zero, so nothing changes until you turn one up.
+              </p>
+            </div>
+            <div class="card">
+              <h3>Tenants and lifecycle</h3>
+              <p>
+                A tenant registry with sub-tenants and roles, plus decay scores that archive stale memories and move them
+                to cold storage on disk or S3.
+              </p>
+            </div>
+          </div>
+          <p class="more">
+            Turn it on with <code>{"context_graph": {"enabled": True}}</code> ·
+            <a href="/docs/context-graph/">How the context graph works →</a>
+            {% if coming %}<br />Ships in the release after <code>{{ library.dist }} {{ library.version }}</code>.{% endif %}
+          </p>
+        </section>
+
+        <section class="start">
+          <h2>Get started</h2>
+          <ol class="steps">
+            <li><span><strong>Install</strong> with the command above. Python 3.9 or newer.</span></li>
+            <li>
+              <span><strong>Set a model key</strong>: <code>export OPENAI_API_KEY=sk-…</code>. OpenAI is the default;
+                Anthropic, Gemini, Groq, Ollama, and others are a config change away.</span>
+            </li>
+            <li><span><strong>Store what the user says</strong> with <code>memory.add(messages, user_id="alice")</code>.</span></li>
+            <li>
+              <span><strong>Search before each reply</strong> with <code>memory.search(query, user_id="alice")</code>, and put
+                the results in your prompt.</span>
+            </li>
+          </ol>
+          <pre class="hl"><code>{{ quickstart | python }}</code></pre>
+          <p class="more"><a href="/docs/quickstart/">Read the quickstart →</a></p>
+        </section>
+      </main>
+{% endblock %}

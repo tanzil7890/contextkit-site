@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Changelog · ContextKit{% endblock %}
+{% block description %}Every release of the ContextKit library and cloud SDK, read from PyPI.{% endblock %}
+{% block body_class %}docs{% endblock %}
+{% block main %}
+      <div class="layout">
+        <aside>
+          <details class="docnav" open>
+            <summary>Releases</summary>
+            {% for pkg in packages.values() %}
+            <p>{{ pkg.label }}</p>
+            {% for release in pkg.releases %}
+            <a href="#{{ pkg.key }}-{{ release.version }}">{{ release.version }}</a>
+            {% endfor %}
+            {% endfor %}
+          </details>
+        </aside>
+
+        <article>
+          <h1>Changelog</h1>
+          <p class="tagline">Every release of the library and the cloud SDK, newest first.</p>
+          <div class="callout">
+            <p>
+              This list is read from PyPI on every build, so a release shows up here without anyone editing the site.
+              Install a specific version with <code>pip install {{ library.dist }}==VERSION</code>.
+            </p>
+          </div>
+          {% for row in releases %}
+          <section class="release" id="{{ row.id }}">
+            <h2>
+              <a href="{{ row.pkg.pypi_url }}{{ row.release.version }}/">{{ row.release.version }}</a>
+              <span class="pkg {{ row.pkg.key }}">{{ row.pkg.label }}</span>
+              <time datetime="{{ row.release.date }}">{{ row.release.date }}</time>
+            </h2>
+            {% if row.notes %}
+            {{ row.notes }}
+            {% else %}
+            <p class="muted">Published to PyPI as <code>{{ row.pkg.dist }} {{ row.release.version }}</code>. No release notes.</p>
+            {% endif %}
+          </section>
+          {% endfor %}
+        </article>
+      </div>
+{% endblock %}

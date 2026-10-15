@@ -1,0 +1,132 @@
+# Site settings for https://contextkit.outhad.com. build.py reads this file.
+
+[site]
+name = "ContextKit"
+description = "ContextKit is long-term memory for AI agents: it turns conversations into facts, keeps them per user, and hands your agent only the few that matter for each request."
+base_url = "https://contextkit.outhad.com"
+# Public repository that holds this site. Used for the GitHub and "Edit this page" links.
+repo = "tanzil7890/contextkit-site"
+license = "Apache-2.0"
+# Docs pages whose `requires:` symbol is not in the latest PyPI release yet are
+# still built, under a "coming in the next release" notice. Set to false to
+# leave them out of the site until they ship.
+show_unreleased = true
+# Flip to true once the hosted cloud is open for sign-ups. Until then the
+# cloud pages say so instead of sending people to a dashboard that is not live.
+cloud_open = false
+
+# Each package is read from PyPI on every build: its versions, release dates,
+# and the public API and config defaults of the modules listed below, parsed out
+# of the latest release's wheel. Nothing version-specific is written by hand.
+[packages.library]
+dist = "outhad-contextkitai"
+import_name = "outhad_contextkit"
+label = "Library"
+install = "pip install outhad-contextkitai"
+reference = "/docs/reference/library/"
+
+[[packages.library.api]]
+module = "outhad_contextkit/memory/main.py"
+classes = ["Memory", "AsyncMemory"]
+
+# The configuration reference, in this order. A module that is not in the
+# release yet is listed under "Not in this release" until it ships.
+[[packages.library.config]]
+title = "Memory"
+module = "outhad_contextkit/configs/base.py"
+classes = ["MemoryConfig"]
+
+[[packages.library.config]]
+title = "LLM"
+key = "llm"
+module = "outhad_contextkit/llms/configs.py"
+classes = ["LlmConfig"]
+
+[[packages.library.config]]
+title = "Embedder"
+key = "embedder"
+module = "outhad_contextkit/embeddings/configs.py"
+classes = ["EmbedderConfig"]
+
+[[packages.library.config]]
+title = "Vector store"
+key = "vector_store"
+module = "outhad_contextkit/vector_stores/configs.py"
+classes = ["VectorStoreConfig"]
+
+[[packages.library.config]]
+title = "Graph store"
+key = "graph_store"
+module = "outhad_contextkit/graphs/configs.py"
+classes = ["GraphStoreConfig", "Neo4jConfig", "MemgraphConfig", "NeptuneConfig"]
+
+[[packages.library.config]]
+title = "Chunking"
+key = "chunking"
+module = "outhad_contextkit/memory/chunking/config.py"
+classes = ["ChunkingConfig"]
+
+[[packages.library.config]]
+title = "Privacy (PPMF)"
+key = "ppmf"
+module = "outhad_contextkit/memory/privacy/config.py"
+classes = ["PPMFConfig"]
+
+[[packages.library.config]]
+title = "Context graph"
+key = "context_graph"
+module = "outhad_contextkit/memory/context_graph/config.py"
+classes = ["ContextGraphConfig", "RetrievalConfig", "EdgeSynthesisConfig", "LLMEdgeConfig", "DecayConfig"]
+
+[[packages.library.config]]
+title = "Personalized retrieval (MSPR)"
+key = "mspr"
+module = "outhad_contextkit/memory/personalized/config.py"
+classes = ["MSPRConfig", "IntentConfig", "FeedbackConfig", "FrequencyConfig", "RoleConfig", "SuccessConfig"]
+
+[[packages.library.config]]
+title = "Tenants"
+key = "tenant"
+module = "outhad_contextkit/memory/tenant/config.py"
+classes = ["TenantConfig", "IsolationConfig", "RegistryConfig"]
+
+[[packages.library.config]]
+title = "Decay and versioning"
+key = "decay_v2"
+module = "outhad_contextkit/memory/lifecycle/config.py"
+classes = ["DecayV2Config", "ScheduleConfig", "VersioningConfig", "ColdStorageConfig"]
+
+[packages.sdk]
+dist = "outhad-contextkit-sdk"
+import_name = "outhad_contextkit_sdk"
+label = "Cloud SDK"
+install = "pip install outhad-contextkit-sdk"
+reference = "/docs/reference/sdk/"
+
+[[packages.sdk.api]]
+module = "outhad_contextkit_sdk/client/main.py"
+classes = ["MemoryClient", "AsyncMemoryClient"]
+constants = ["DEFAULT_HOST", "DEV_HOST"]
+
+# Sidebar order. Each entry is a file in content/docs/ (without .md), except
+# "reference/library", "reference/config" and "reference/sdk", which are
+# generated from the wheels on PyPI.
+[[nav]]
+section = "Get started"
+pages = ["index", "quickstart", "installation", "configuration"]
+
+[[nav]]
+section = "Using memory"
+pages = ["memory-operations", "scoping", "graph-memory", "chunking", "privacy", "multimodal"]
+
+[[nav]]
+section = "Advanced layers"
+pages = ["context-graph", "personalized-retrieval", "tenants", "decay-and-versioning"]
+
+[[nav]]
+section = "Cloud"
+pages = ["cloud"]
+
+[[nav]]
+section = "Reference"
+pages = ["reference/library", "reference/config", "reference/sdk", "providers"]
