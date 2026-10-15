@@ -1,9 +1,9 @@
-# Site settings for https://docs.contextkit.outhad.com. build.py reads this file.
+# Site settings for https://contextkit.outhad.com. build.py reads this file.
 
 [site]
 name = "ContextKit"
 description = "ContextKit is long-term memory for AI agents: it turns conversations into facts, keeps them per user, and hands your agent only the few that matter for each request."
-base_url = "https://docs.contextkit.outhad.com"
+base_url = "https://contextkit.outhad.com"
 # Public repository that holds this site. Used for the GitHub and "Edit this page" links.
 repo = "tanzil7890/contextkit-site"
 license = "Apache-2.0"

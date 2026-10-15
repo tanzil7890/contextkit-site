@@ -1,11 +1,11 @@
-# docs.contextkit.outhad.com
+# contextkit.outhad.com
 
-The website and documentation for [ContextKit](https://docs.contextkit.outhad.com), long-term memory for AI agents.
+The website and documentation for [ContextKit](https://contextkit.outhad.com), long-term memory for AI agents.
 
 - **Library:** [`outhad-contextkitai`](https://pypi.org/project/outhad-contextkitai/) — `pip install outhad-contextkitai`
 - **Cloud SDK:** [`outhad-contextkit-sdk`](https://pypi.org/project/outhad-contextkit-sdk/) — `pip install outhad-contextkit-sdk`
-- **Docs:** <https://docs.contextkit.outhad.com/docs/>
-- **Changelog:** <https://docs.contextkit.outhad.com/changelog/>
+- **Docs:** <https://contextkit.outhad.com/docs/>
+- **Changelog:** <https://contextkit.outhad.com/changelog/>
 
 Found a mistake in the docs? Open an issue, or use the "Edit this page on GitHub" link at the bottom of any page.
 
@@ -87,8 +87,8 @@ Add a page by creating `content/docs/<slug>.md` and listing `<slug>` in a `[[nav
 GitHub Pages, deployed by `.github/workflows/deploy.yml`. One-time setup:
 
 1. **Settings → Pages → Source:** GitHub Actions.
-2. **Settings → Pages → Custom domain:** `docs.contextkit.outhad.com`, then **Enforce HTTPS**.
-3. **DNS:** a `CNAME` record for `docs.contextkit` at `outhad.com` pointing to `tanzil7890.github.io`. (`contextkit.outhad.com` itself is kept for the cloud API and dashboard.)
+2. **Settings → Pages → Custom domain:** `contextkit.outhad.com`, then **Enforce HTTPS**.
+3. **DNS:** a `CNAME` record for `contextkit` at `outhad.com` pointing to `tanzil7890.github.io`. The landing page is served at `/` and the docs at `/docs/`, so the hosted cloud API and dashboard need their own hosts (for example `api.contextkit.outhad.com` and `app.contextkit.outhad.com`).
 
 ## License
 

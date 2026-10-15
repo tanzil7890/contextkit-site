@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build https://docs.contextkit.outhad.com into _site/.
+"""Build https://contextkit.outhad.com into _site/.
 
 The site has two kinds of content:
 
@@ -56,7 +56,7 @@ ROOT = Path(__file__).resolve().parent
 OUT = ROOT / "_site"
 CACHE = ROOT / ".cache"
 CONTENT = ROOT / "content"
-USER_AGENT = "contextkit-site-build (+https://docs.contextkit.outhad.com)"
+USER_AGENT = "contextkit-site-build (+https://contextkit.outhad.com)"
 
 
 # --------------------------------------------------------------------------- PyPI
