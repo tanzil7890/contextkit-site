@@ -44,8 +44,8 @@ memory = Memory.from_config({
 })
 ```
 
-!!! warning "Anthropic models in {{ library.version }}"
-    The `anthropic` provider in 0.1.2 and earlier sends both `temperature` and `top_p` with every request, and its default model has been retired. Current Claude models reject requests that set both, so the provider fails with any Claude model available today. A fix is on the main branch for the next release; until then, use another provider for fact extraction.
+!!! warning "Anthropic models"
+    Up to 0.1.2, the `anthropic` provider sends both `temperature` and `top_p` with every request, which every Claude model available today rejects. From 0.1.3 it sends only `temperature`, which Claude Haiku 4.5, Sonnet 4.6, and Opus 4.6 accept, for example `"model": "claude-sonnet-4-6"`. Newer Claude models reject `temperature` as well, so they do not work with this provider yet. Its built-in default model has been retired, so always set `model`.
 
 ## Embedders
 

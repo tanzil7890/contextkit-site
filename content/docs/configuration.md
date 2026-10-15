@@ -49,7 +49,9 @@ The Qdrant default is meant for trying things out. For anything you want to keep
 | `ppmf` | Settings for the privacy tools | [Privacy](/docs/privacy/) |
 | `version` | Response shape: `"v1.1"` (default) or the deprecated `"v1.0"`, which returns bare lists | |
 
-The next release adds four more, each off by default: `context_graph`, `mspr`, `tenant`, and `decay_v2`. Their guides are under **Advanced layers** in the sidebar.
+Four more keys switch on the opt-in layers, each off by default: `context_graph`, `mspr`, `tenant`, and `decay_v2`. Their guides are under **Advanced layers** in the sidebar, and each says at the top if its layer is not in the current release yet.
+
+From 0.1.3, `history_db_path` also accepts a Postgres URL (`postgresql://user:password@host/db`, with `psycopg2` installed), so several processes can share one history.
 
 Every field and default is listed in the [configuration reference](/docs/reference/config/), generated from the current release.
 

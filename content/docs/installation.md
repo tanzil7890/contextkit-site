@@ -31,10 +31,11 @@ Install one or more with brackets:
 pip install "{{ library.dist }}[graph,llms]"
 ```
 
-[Chunking](/docs/chunking/) by tokens needs `tiktoken`, which is not part of any extra:
+A few features need packages that are not part of any extra:
 
 ```bash
-pip install tiktoken
+pip install tiktoken        # token chunking
+pip install networkx scipy  # the context graph; scipy for PageRank retrieval
 ```
 
 ## Environment variables

@@ -76,4 +76,4 @@ memory.search("hotfix", run_id="standup-0915", filters={"actor_id": "bob"})
 
 ## Multi-tenant apps
 
-For software that serves many organisations, put the tenant in the scope (for example `user_id=f"{tenant}:{user}"`) or in metadata and filter on it. The next release adds a [tenant registry](/docs/tenants/) with sub-tenants and roles on top of this.
+For software that serves many organisations, put the tenant in the scope (for example `user_id=f"{tenant}:{user}"`) or in metadata and filter on it. The [tenant layer](/docs/tenants/) adds a registry with sub-tenants and roles on top of this.
