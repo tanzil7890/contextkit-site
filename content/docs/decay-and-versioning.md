@@ -96,7 +96,7 @@ print(memory.diff_versions(old_id, new_id))               # unified diff
 print(memory.diff_versions(old_id, new_id, mode="json"))  # {"removed": ..., "added": ...}
 ```
 
-The layer also has a version-chain API, `versions`, `latest_version`, and `rollback`, for `versioning.mode: "immutable"`, where an update writes a new memory and marks the old one superseded. In this build `update` still edits memories in place, so chains are not created by updates yet; treat the chain API as a preview.
+The layer also has a version-chain API, `versions`, `latest_version`, and `rollback`, for `versioning.mode: "immutable"`, where an update writes a new memory and marks the old one superseded. As of 0.1.3, `update` still edits memories in place and only `rollback` writes a new version, so treat the chain API as a preview.
 
 ## Telemetry
 

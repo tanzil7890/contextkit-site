@@ -49,7 +49,7 @@ memory.backfill_context_graph(user_id="u1")   # {"nodes": 42, "edges": 117}
 | `TEMPORAL_NEXT` | Each memory follows the previous one in the same run (or agent) for the same user | 0.6 |
 | `DOCUMENT_LINK` | Two memories share a `doc_id`, `document_id`, `source_id`, `source_url`, or `url` in metadata, or a URL in their text | 0.8 |
 | `TOPIC_SIMILAR` | Embeddings are at least `topic_min_similarity` (0.75) alike; up to `topic_top_k` (5) per memory | The cosine similarity |
-| `UPDATED_FROM` | A new version of a memory is written by [versioning](/docs/decay-and-versioning/) | 1.0 |
+| `UPDATED_FROM` | `rollback` writes a new version of a memory (see [versioning](/docs/decay-and-versioning/#versions)) | 1.0 |
 | `SUPPORTS`, `CONTRADICTS`, `REFINES`, `ELABORATES` | The LLM labels a pair of similar memories, when LLM edges are on | The LLM's confidence |
 
 Turn individual edge types off under `context_graph.edges`, for example `"edges": {"enable_topic_similar": False}`.
