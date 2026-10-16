@@ -38,6 +38,14 @@
             </p>
           </div>
           {% endif %}
+          {% if page.meta.get("access") == "team" %}
+          <div class="callout">
+            <p>
+              <strong>Available on request.</strong> We set this up together with each team.
+              <a href="{{ site.contact_url }}">Reach out to the team</a> for access, and to talk through your use case.
+            </p>
+          </div>
+          {% endif %}
           {% if page.meta.get("cloud_notice") and not site.cloud_open %}
           <div class="callout unreleased">
             <p>

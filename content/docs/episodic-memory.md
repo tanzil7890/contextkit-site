@@ -2,7 +2,7 @@
 title: Episodic memory (TCMGM)
 nav: Episodic memory
 description: Dated events and the cause → effect links between them, so your agent can answer when and why.
-requires: outhad_contextkit.memory.main:Memory.build_timeline
+access: team
 ---
 
 Facts tell your agent *what* is true. Episodic memory tells it *what happened, when, and what led to what*: a timeline of dated events with cause → effect links between them. Ask "why did checkout start timing out?" and you get back the deploy that came before it, not just the facts that look like the question.

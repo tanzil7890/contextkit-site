@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}ContextKit: long-term memory for AI agents{% endblock %}
-{% macro soon(slug) %}{% if unreleased.get(slug) %}<span class="soon">next release</span>{% endif %}{% endmacro %}
+{% macro soon(slug) %}{% if access.get(slug) == "team" %}<span class="soon">on request</span>{% elif unreleased.get(slug) %}<span class="soon">next release</span>{% endif %}{% endmacro %}
 {% block main %}
       <main>
         <section class="hero">

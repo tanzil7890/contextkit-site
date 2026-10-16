@@ -67,6 +67,7 @@ requires: outhad_contextkit.memory.context_graph   # optional
 ```
 
 - `requires:` names a module (`a.b.c`) or something in one (`a.b.c:Class.method`). While the latest release on PyPI does not contain it, the page carries a "coming in the next release" notice. Set `show_unreleased = false` in `site.toml` to leave such pages out instead.
+- `access: team` marks a feature you set up with customers: the page opens with an "Available on request" note linking to `contact_url` in `site.toml`, and the landing page tags it "on request".
 - `{{ library.version }}`, `{{ library.install }}`, `{{ library.dist }}` and the same for `sdk` are replaced with values from PyPI.
 - Use `!!! note "Title"` or `!!! warning "Title"` for callouts.
 - Link between pages with absolute paths, such as `/docs/scoping/#filter-by-metadata`.

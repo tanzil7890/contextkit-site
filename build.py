@@ -783,6 +783,7 @@ class Site:
             "/", "home.html",
             quickstart=(CONTENT / "snippets" / "quickstart.py").read_text().strip(),
             unreleased={slug_: page.unreleased for slug_, page in self.pages.items()},
+            access={slug_: page.meta.get("access") for slug_, page in self.pages.items()},
         )
         for slug_, page in self.pages.items():
             if page.unreleased and not self.settings.get("show_unreleased", True):
