@@ -64,6 +64,12 @@ module = "outhad_contextkit/graphs/configs.py"
 classes = ["GraphStoreConfig", "Neo4jConfig", "MemgraphConfig", "NeptuneConfig"]
 
 [[packages.library.config]]
+title = "Episodic memory (TCMGM)"
+key = "tcmgm"
+module = "outhad_contextkit/memory/temporal/config.py"
+classes = ["TCMGMConfig"]
+
+[[packages.library.config]]
 title = "Chunking"
 key = "chunking"
 module = "outhad_contextkit/memory/chunking/config.py"
@@ -120,7 +126,7 @@ pages = ["index", "quickstart", "installation", "configuration"]
 
 [[nav]]
 section = "Using memory"
-pages = ["memory-operations", "scoping", "graph-memory", "chunking", "privacy", "multimodal"]
+pages = ["memory-operations", "scoping", "graph-memory", "episodic-memory", "chunking", "privacy", "multimodal"]
 
 [[nav]]
 section = "Advanced layers"

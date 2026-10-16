@@ -3,7 +3,7 @@ title: Graph memory
 description: Add a graph database and memories gain entities, relations, timelines, and cause → effect links.
 ---
 
-With a graph store configured, ContextKit keeps two views of what it learns. The vector store holds the facts, as before. The graph holds the **entities** in them (people, products, services, places) and the **relations** between them, stamped with when they were recorded. On top of the graph, ContextKit can build a **timeline** of events and the **causal links** between them, and search all of it at once. This part of ContextKit is called TCMGM: temporal, causal, multimodal graph memory.
+With a graph store configured, ContextKit keeps two views of what it learns. The vector store holds the facts, as before. The graph holds the **entities** in them (people, products, services, places) and the **relations** between them, stamped with when they were recorded. On top of the graph, ContextKit can keep a **timeline** of events and the **causal links** between them, and search all of it at once. That part, called TCMGM, has its own page: [Episodic memory](/docs/episodic-memory/).
 
 ## Set it up
 
@@ -51,28 +51,7 @@ Relations the LLM decides are outdated are removed from the graph when new infor
 
 ## Timelines and causes
 
-To turn a conversation into dated events and the links between them, give a transcript to the timeline builder. It uses the same LLM and graph as your `Memory`:
-
-```python
-from datetime import datetime
-from outhad_contextkit.memory.timeline import TimelineBuilder
-
-timeline = TimelineBuilder(memory.llm, memory.graph)
-
-result = timeline.build_from_transcript(
-    transcript="""
-User: We shipped the new caching layer on Monday.
-User: Since Tuesday, checkout has been timing out.
-User: Rolling back the cache fixed the timeouts.
-""",
-    user_id="dev-team",
-    session_start=datetime(2026, 10, 12, 9, 0),
-)
-print(result["events"])        # dated events extracted from the transcript
-print(result["causal_links"])  # e.g. caching layer shipped → checkout timeouts
-```
-
-The events and causal links are stored in the graph, so later searches can use them. `timeline.get_timeline(user_id, time_window=None, limit=50)` returns a user's events in order.
+Dated events and the cause → effect links between them are episodic memory. Storing them, reading a timeline back, and asking why something happened are covered on [Episodic memory](/docs/episodic-memory/).
 
 ## Fused search
 
@@ -99,13 +78,14 @@ Fused search returns a different shape from a normal search. There is no `result
 | `fused_ranking` | The merged top results, ranked with reciprocal rank fusion. Each item has `content`, `id`, `source` (`vector`, `graph`, or `timeline`), `score`, `final_score`, `fusion_sources`, and `metadata`. |
 | `vector_results` | The vector store matches. |
 | `graph_results` | Matching entities and relations. |
-| `timeline_results` | Events inside `time_window`. |
-| `causal_chains` | For each seed event, the chains of causes before it and effects after it. |
-| `multimodal_results` | Cross-modal matches, when [multimodal](/docs/multimodal/) embedders are set up. |
+| `timeline_results` | Dated graph nodes inside `time_window`; empty without one. |
+| `causal_chains` | Chains of causes and effects around the top vector matches. Those are memory ids, not event ids, so this is usually empty; to ask why, use [`get_causal_chain`](/docs/episodic-memory/#ask-why). |
+| `multimodal_results` | Reserved for cross-modal matches. Cross-modal search is not connected yet, so it is always empty. |
 
 Things to know:
 
 - `time_window` takes ISO 8601 strings for `start`, `end`, or both.
 - Fused search uses the first of `user_id`, `agent_id`, `run_id` you pass, and ignores `filters` and `threshold`.
 - Without a graph store, `use_tcmgm=True` is ignored and you get a normal search.
-- It is available on `Memory`, not `AsyncMemory`.
+- `AsyncMemory.search` takes `use_tcmgm` from the release that adds [episodic memory](/docs/episodic-memory/); before that, use `Memory`.
+- With `memgraph` or `neptune`, fused search covers the vector store and entity graph only.

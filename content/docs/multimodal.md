@@ -43,7 +43,7 @@ What gets stored is text: the facts the LLM drew from its description of the ima
 
 ## Image and audio embeddings
 
-The `multimodal` extra installs the libraries for CLIP (images) and CLAP (audio) embeddings, which place images and audio in the same space as text. They are used by [graph memory](/docs/graph-memory/) for cross-modal events and the `multimodal_results` of fused search. They are large downloads, so install them only if you need them:
+The `multimodal` extra installs the libraries for CLIP (images) and CLAP (audio) embeddings, which place images and audio in the same space as text. You can use them directly from `outhad_contextkit.memory.temporal`; they are not connected to search yet, so the `multimodal_results` of [fused search](/docs/graph-memory/#fused-search) stays empty. They are large downloads, so install them only if you need them:
 
 ```bash
 pip install "{{ library.dist }}[multimodal]"

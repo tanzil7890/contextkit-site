@@ -42,6 +42,7 @@ The Qdrant default is meant for trying things out. For anything you want to keep
 | `embedder` | The model that embeds memories and queries | [Embedders](/docs/providers/#embedders) |
 | `vector_store` | Where memories and embeddings live | [Vector stores](/docs/providers/#vector-stores) |
 | `graph_store` | Neo4j, Memgraph, or Neptune for entities and relations | [Graph memory](/docs/graph-memory/) |
+| `tcmgm` | Timelines and cause → effect links on top of the graph store; on whenever `graph_store` is set | [Episodic memory](/docs/episodic-memory/) |
 | `history_db_path` | The SQLite file for change history | |
 | `custom_fact_extraction_prompt` | Replaces the prompt that pulls facts out of messages | [below](#custom-prompts) |
 | `custom_update_memory_prompt` | Replaces the prompt that decides ADD / UPDATE / DELETE / NONE | [below](#custom-prompts) |
