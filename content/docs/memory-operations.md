@@ -147,7 +147,7 @@ async def main():
 asyncio.run(main())
 ```
 
-`AsyncMemory.search` takes the graph-memory arguments (`use_tcmgm`, `time_window`, `include_causal`) from the release that adds [episodic memory](/docs/episodic-memory/); in earlier releases, use `Memory` for those.
+`AsyncMemory.search` takes the graph-memory arguments (`use_tcmgm`, `time_window`, `include_causal`) from 0.1.4; in earlier releases, use `Memory` for those.
 
 ## Full signatures
 

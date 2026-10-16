@@ -86,6 +86,7 @@ payload = memory.promote_from_cold(memory_id)  # re-embedded and restored with t
 | `disabled` (default) | Nowhere; the calls do nothing | |
 | `local` | JSON files on disk | `local_root`, defaulting to `~/.outhad_contextkit/cold_storage` |
 | `s3` | One object per memory | `s3_bucket`, `s3_prefix`; needs `boto3` and AWS credentials from the environment |
+| `postgres` | One row per memory, from 0.1.4 | The [state store](/docs/configuration/#state-store) URL |
 
 Demoting removes the memory from the vector store, so it no longer appears in any search until it is promoted.
 

@@ -60,13 +60,13 @@ memory.record_feedback(top["id"], helpful=True, user_id="u1", query="Q4 revenue 
 # {"memory_id": "...", "delta_applied": 0.15, "new_relevance": ..., "event_id": ..., "helpful": True}
 ```
 
-A helpful verdict raises the memory's relevance by `boost_delta` (0.15), up to `max_boost_per_memory` (0.60), and by default keeps it from decaying below the new level. An unhelpful one lowers it by `penalty_delta` (0.10). The verdict also feeds the `personal` term. Verdicts are stored in `feedback_events.db`.
+A helpful verdict raises the memory's relevance by `boost_delta` (0.15), up to `max_boost_per_memory` (0.60), and by default keeps it from decaying below the new level. An unhelpful one lowers it by `penalty_delta` (0.10). The verdict also feeds the `personal` term. Verdicts are stored in `feedback_events.db`, or from 0.1.4 in Postgres with a [state store](/docs/configuration/#state-store).
 
 `record_feedback` returns `None` when MSPR, feedback, or the context graph is off, or when the memory is not in the graph. `memory.reset_feedback(user_id="u1")` deletes one user's verdicts, or everyone's without `user_id`.
 
 ## Answers that worked
 
-With `success` on, passing `query=` to `record_feedback` also records whether that memory helped for that exact query (lowercased, trimmed, and hashed). Later searches with the same query lift memories with a good record. A memory needs `min_sample_size` (3) verdicts for the query before it counts. These rows are stored in `query_success.db`.
+With `success` on, passing `query=` to `record_feedback` also records whether that memory helped for that exact query (lowercased, trimmed, and hashed). Later searches with the same query lift memories with a good record. A memory needs `min_sample_size` (3) verdicts for the query before it counts. These rows are stored in `query_success.db`, or in the state store when one is set.
 
 `memory.backfill_mspr()` rebuilds the success table from existing feedback. Run it once: running it again adds the same rows a second time.
 

@@ -44,6 +44,7 @@ The Qdrant default is meant for trying things out. For anything you want to keep
 | `graph_store` | Neo4j, Memgraph, or Neptune for entities and relations | [Graph memory](/docs/graph-memory/) |
 | `tcmgm` | Timelines and cause → effect links on top of the graph store; on whenever `graph_store` is set | [Episodic memory](/docs/episodic-memory/) |
 | `history_db_path` | The SQLite file for change history | |
+| `state_store` | A Postgres database for the opt-in layers' state, from 0.1.4 | [below](#state-store) |
 | `custom_fact_extraction_prompt` | Replaces the prompt that pulls facts out of messages | [below](#custom-prompts) |
 | `custom_update_memory_prompt` | Replaces the prompt that decides ADD / UPDATE / DELETE / NONE | [below](#custom-prompts) |
 | `chunking` | Splitting long documents stored with `infer=False` | [Chunking](/docs/chunking/) |
@@ -57,6 +58,37 @@ From 0.1.3, `history_db_path` also accepts a Postgres URL (`postgresql://user:pa
 <!-- diagram: config-layers -->
 
 Every field and default is listed in the [configuration reference](/docs/reference/config/), generated from the current release.
+
+## State store
+
+The opt-in layers keep their state on local disk by default: the context graph in memory or a file, feedback in SQLite files, cold storage in JSON files. From 0.1.4, `state_store` puts it in a Postgres database instead, so several processes or servers share it and a restart loses nothing.
+
+```bash
+pip install "{{ library.dist }}[postgres]"
+```
+
+```python
+memory = Memory.from_config({
+    "state_store": {
+        "url": "postgresql://user:password@host/db",
+        "namespace": "acme-prod",
+    },
+    "context_graph": {"enabled": True, "backend": "postgres"},
+    "mspr": {"enabled": True, "feedback": {"enabled": True}},
+    "decay_v2": {"enabled": True, "cold_storage": {"backend": "postgres"}},
+})
+```
+
+| State | Kept in the state store when |
+|---|---|
+| [Context graph](/docs/context-graph/): nodes, edges, embeddings, change log | `context_graph.backend` is `"postgres"` |
+| [Personalized retrieval](/docs/personalized-retrieval/): feedback and query-success rows | `state_store.url` is set and that store has no `sqlite_path` |
+| [Cold storage](/docs/decay-and-versioning/#cold-storage) | `decay_v2.cold_storage.backend` is `"postgres"` |
+
+- **Tables.** ContextKit creates its tables (named `ck_…`) on first use. If the database has the pgvector extension, graph similarity lookups run in SQL; otherwise embeddings are compared in Python.
+- **Namespace.** `namespace` (default `"default"`) keeps the state of several memories apart in one database, for example one per project or environment.
+- **Missing URL.** A `"postgres"` backend without `state_store.url` logs an error: the context graph stays off, and cold storage does nothing.
+- **Everything else.** For several processes to share all of a memory, the vector store and history must be shared too: use a vector store server, and a Postgres URL for `history_db_path`.
 
 ## Match the embedding size
 

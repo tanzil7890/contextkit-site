@@ -24,6 +24,7 @@ The base install includes the Qdrant client, the OpenAI SDK, and the encryption 
 | `llms` | Groq, Together, LiteLLM, Ollama, Vertex AI, Gemini | [LLM providers](/docs/providers/#llms) other than OpenAI |
 | `extras` | `boto3`, Elasticsearch, OpenSearch, `sentence-transformers`, `langchain-memgraph` | Bedrock, Elasticsearch, OpenSearch, Hugging Face, Memgraph |
 | `multimodal` | `torch`, `transformers`, `laion-clap` | Image and audio embeddings for [multimodal](/docs/multimodal/) graph memory |
+| `postgres` | `psycopg2-binary` | A Postgres `history_db_path`, and the [state store](/docs/configuration/#state-store) (0.1.4) |
 
 Install one or more with brackets:
 

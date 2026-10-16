@@ -91,5 +91,5 @@ Things to know:
 - `time_window` takes ISO 8601 strings for `start`, `end`, or both.
 - Fused search uses the first of `user_id`, `agent_id`, `run_id` you pass, and ignores `filters` and `threshold`.
 - Without a graph store, `use_tcmgm=True` is ignored and you get a normal search.
-- `AsyncMemory.search` takes `use_tcmgm` from the release that adds [episodic memory](/docs/episodic-memory/); before that, use `Memory`.
+- `AsyncMemory.search` takes `use_tcmgm` from 0.1.4; in earlier releases, use `Memory`.
 - With `memgraph` or `neptune`, fused search covers the vector store and entity graph only.
