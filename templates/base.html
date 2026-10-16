@@ -6,6 +6,7 @@
     <title>{% block title %}{{ site.name }}{% endblock %}</title>
     <meta name="description" content="{% block description %}{{ site.description }}{% endblock %}" />
     <link rel="canonical" href="{{ site.base_url }}{{ path }}" />
+    {% if page is defined and page.preview %}<meta name="robots" content="noindex" />{% endif %}
     <meta property="og:type" content="website" />
     <meta property="og:url" content="{{ site.base_url }}{{ path }}" />
     <meta property="og:title" content="{{ self.title() }}" />

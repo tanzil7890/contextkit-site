@@ -583,6 +583,7 @@ class Page:
     unreleased: str = ""
     source: str = ""
     meta: dict = field(default_factory=dict)
+    preview: bool = False
 
 
 def page_url(slug_: str) -> str:
@@ -726,6 +727,12 @@ class Site:
                     )
                 else:
                     self.pages[slug_] = self.load_markdown(slug_)
+        # Preview pages are built at their URL but left out of the menu, the
+        # previous/next links and the sitemap, and ask search engines not to index them.
+        for slug_ in self.settings.get("preview_pages", []):
+            page = self.load_markdown(slug_)
+            page.preview = True
+            self.pages[slug_] = page
 
     def load_markdown(self, slug_: str) -> Page:
         path = CONTENT / "docs" / f"{slug_}.md"
@@ -759,6 +766,8 @@ class Site:
         return sections
 
     def neighbours(self, current: str) -> tuple[Page | None, Page | None]:
+        if self.pages[current].preview:
+            return None, None
         order = [p for p in (item["page"] for s in self.nav(current) for item in s["items"])]
         index = next(i for i, p in enumerate(order) if p.slug == current)
         return (order[index - 1] if index else None, order[index + 1] if index + 1 < len(order) else None)
@@ -822,7 +831,8 @@ class Site:
         (OUT / "CNAME").write_text(base.split("://", 1)[1] + "\n")
         (OUT / ".nojekyll").write_text("")
         (OUT / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {base}/sitemap.xml\n")
-        urls = [u for u in self.written if u.endswith("/")]
+        previews = {p.url for p in self.pages.values() if p.preview}
+        urls = [u for u in self.written if u.endswith("/") and u not in previews]
         sitemap = "".join(f"<url><loc>{base}{u}</loc></url>" for u in urls)
         (OUT / "sitemap.xml").write_text(
             f'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{sitemap}</urlset>\n'

@@ -29,6 +29,14 @@
           {% if page.description %}
           <p class="tagline">{{ page.description }}</p>
           {% endif %}
+          {% if page.preview %}
+          <div class="callout">
+            <p>
+              <strong>Preview.</strong> This page tries out new diagrams and is not linked from the menu.
+              {% if page.meta.get("preview_of") %}Compare it with the <a href="{{ page.meta.get("preview_of") }}">current page</a>.{% endif %}
+            </p>
+          </div>
+          {% endif %}
           {% if page.unreleased %}
           <div class="callout unreleased">
             <p>
