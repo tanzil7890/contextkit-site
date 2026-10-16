@@ -129,11 +129,11 @@ pages = ["index", "quickstart", "installation", "configuration"]
 
 [[nav]]
 section = "Using memory"
-pages = ["memory-operations", "scoping", "graph-memory", "episodic-memory", "chunking", "privacy", "multimodal"]
+pages = ["memory-operations", "scoping", "graph-memory", "chunking", "privacy", "multimodal"]
 
 [[nav]]
 section = "Advanced layers"
-pages = ["context-graph", "personalized-retrieval", "tenants", "decay-and-versioning"]
+pages = ["episodic-memory", "context-graph", "personalized-retrieval", "tenants", "decay-and-versioning"]
 
 [[nav]]
 section = "Cloud"
