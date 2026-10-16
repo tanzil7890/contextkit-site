@@ -6,6 +6,8 @@ requires: outhad_contextkit.memory.tenant
 
 The tenant layer gives a multi-tenant app a registry to work from: tenants (your customers), sub-tenants under them (departments, projects, or users), and role bindings that say who can do what. It is stored in SQLite next to your other ContextKit files, so it needs no new infrastructure.
 
+<!-- diagram: tenants -->
+
 ## Turn it on
 
 ```python

@@ -8,6 +8,8 @@ ContextKit ships privacy building blocks under `outhad_contextkit.memory.privacy
 !!! note "Call them yourself"
     In {{ library.version }}, setting `ppmf.enabled` in the `Memory` config does not run these tools inside `add` or `search`. Use them directly on text before you pass it to `add`, as shown below.
 
+<!-- diagram: privacy -->
+
 ## Find sensitive spans
 
 ```python

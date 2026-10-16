@@ -54,6 +54,8 @@ Four more keys switch on the opt-in layers, each off by default: `context_graph`
 
 From 0.1.3, `history_db_path` also accepts a Postgres URL (`postgresql://user:password@host/db`, with `psycopg2` installed), so several processes can share one history.
 
+<!-- diagram: config-layers -->
+
 Every field and default is listed in the [configuration reference](/docs/reference/config/), generated from the current release.
 
 ## Match the embedding size

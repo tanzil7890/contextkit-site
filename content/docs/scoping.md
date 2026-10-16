@@ -27,6 +27,8 @@ memory.search("bookings", agent_id="travel-agent", run_id="trip-118")  # one run
 
 When you pass several ids, a memory must match all of them.
 
+<!-- diagram: scoping -->
+
 ## Agents that share memory
 
 Several agents can read and write the same scope. A research agent stores findings that a coding agent picks up later:

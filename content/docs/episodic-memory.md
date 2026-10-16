@@ -55,6 +55,8 @@ built["events"]        # [{"id", "content", "timestamp", "confidence", "modality
 built["causal_links"]  # [{"cause_id", "effect_id", "causal_type", "confidence", "evidence", "timestamp"}, ...]
 ```
 
+<!-- diagram: tcmgm-write -->
+
 `messages` can be a string or a list of messages with text content. Each event is stored as its own node in the graph, and its entities and relations are added to the entity graph too.
 
 Things to know:
@@ -92,6 +94,8 @@ for chain in causes:
     print(" → ".join(e["content"] for e in chain["events"]))
     print([link["causal_type"] for link in chain["causal_links"]])
 ```
+
+<!-- diagram: tcmgm-chain -->
 
 You get up to 10 chains, shortest first. Each is `{"events": [...], "causal_links": [...], "depth": n}`, with events in cause → effect order. Link types are `caused_by`, `leads_to`, `enables`, `prevents`, and `correlates_with`. `max_depth` (default 3) limits how far a chain goes.
 

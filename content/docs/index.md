@@ -42,6 +42,8 @@ for hit in hits["results"]:
 
 ## How it works
 
+<!-- diagram: how-it-works -->
+
 When you **add**, ContextKit:
 
 1. Extracts candidate facts from the messages with the LLM (skipped with `infer=False`).

@@ -21,6 +21,8 @@ for hit in hits["results"]:
     print(hit["memory"])
 ```
 
+<!-- diagram: cloud -->
+
 ## Connecting
 
 ```python

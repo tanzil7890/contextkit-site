@@ -46,6 +46,8 @@ All six weights live under `context_graph.retrieval`. With `mspr.enabled` on but
 | intent | `mspr.intent.enabled` | adjusts α, β, γ, δ | The kind of question |
 | role | `mspr.role.enabled` | filter or multiplier | A `RolePolicy` you install |
 
+<!-- diagram: mspr -->
+
 ## Feedback
 
 Tell ContextKit whether a retrieved memory helped:

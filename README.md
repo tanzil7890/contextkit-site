@@ -70,6 +70,7 @@ requires: outhad_contextkit.memory.context_graph   # optional
 - `access: team` marks a feature you set up with customers: the page opens with an "Available on request" note linking to `contact_url` in `site.toml`, and the landing page tags it "on request".
 - `{{ library.version }}`, `{{ library.install }}`, `{{ library.dist }}` and the same for `sdk` are replaced with values from PyPI.
 - Use `!!! note "Title"` or `!!! warning "Title"` for callouts.
+- `<!-- diagram: name -->` on a line of its own inlines a diagram from `diagrams.py`. Each diagram is a function there drawn on a small grid helper; colours come from the `.dg` rules in `static/site.css`, so they follow light and dark mode. Orange outline means an LLM call, blue a scope or policy check, green what is stored or returned, dashed optional or not connected.
 - Link between pages with absolute paths, such as `/docs/scoping/#filter-by-metadata`.
 
 Add a page by creating `content/docs/<slug>.md` and listing `<slug>` in a `[[nav]]` section of `site.toml`.

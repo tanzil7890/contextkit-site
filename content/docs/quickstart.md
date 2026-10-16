@@ -70,6 +70,8 @@ Each result has the memory text, its `id`, a similarity `score`, its `metadata`,
 
 ## 5. Put it together
 
+<!-- diagram: agent-loop -->
+
 ```python
 from openai import OpenAI
 from outhad_contextkit import Memory

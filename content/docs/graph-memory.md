@@ -34,6 +34,8 @@ memory = Memory.from_config({
 
 ## Entities and relations
 
+<!-- diagram: graph-memory -->
+
 Nothing changes in how you call `add` and `search`. Both now return a `relations` key next to `results`:
 
 ```python
@@ -70,6 +72,8 @@ answer = memory.search(
 for item in answer["fused_ranking"]:
     print(item["source"], round(item["final_score"], 3), item["content"])
 ```
+
+<!-- diagram: fused-search -->
 
 Fused search returns a different shape from a normal search. There is no `results` key; instead:
 

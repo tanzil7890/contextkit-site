@@ -6,6 +6,8 @@ requires: outhad_contextkit.memory.lifecycle
 
 Long-lived memory stores fill up with facts nobody needs any more. The lifecycle layer gives every memory a decay score from how recently and how often it was used and whether it helped, archives the ones that fall below a threshold, and can move them to cheap storage and bring them back on demand.
 
+<!-- diagram: decay-lifecycle -->
+
 ## Turn it on
 
 The decay score is computed from the [context graph](/docs/context-graph/), so turn both on:

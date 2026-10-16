@@ -22,6 +22,8 @@ result = memory.add(messages, user_id="alice", metadata={"source": "chat"})
 | `memory_type` | `None` | `"procedural_memory"` (with an `agent_id`) stores a summary of the agent's steps instead of facts. |
 | `prompt` | `None` | The system prompt for procedural memory. |
 
+<!-- diagram: add-decision -->
+
 With `infer=True`, the result lists each change the LLM decided on:
 
 ```python

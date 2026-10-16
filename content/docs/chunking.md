@@ -5,6 +5,8 @@ description: Store long documents as overlapping chunks, and stitch them back to
 
 Facts extracted by the LLM are short. Documents, transcripts, and logs that you store with `infer=False` are not, and one long embedding is a poor match for a specific question. With chunking on, ContextKit splits long texts into overlapping chunks, stores each as its own memory, and can merge neighbouring chunks back together when you search.
 
+<!-- diagram: chunking -->
+
 ## Turn it on
 
 ```bash

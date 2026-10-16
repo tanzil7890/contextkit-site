@@ -43,6 +43,8 @@ memory.backfill_context_graph(user_id="u1")   # {"nodes": 42, "edges": 117}
 
 ## How memories are linked
 
+<!-- diagram: cgl-links -->
+
 | Edge | Created when | Weight |
 |---|---|---|
 | `REPLY_TO` | The previous memory in the same run (or agent) for the same user was added within `reply_to_window_seconds` (30 minutes) | 1.0 |
@@ -73,6 +75,8 @@ Only pairs at least `min_topic_similarity` (0.80) alike are sent, and labels bel
 
 When the context graph is on, `search` uses it by default. Pass `use_context_graph=False` to skip it for one call, or set `retrieval.enabled` to `False` to make that the default.
 
+<!-- diagram: cgl-search -->
+
 1. **Seed.** The vector store's top `seed_top_k` (10) matches become seeds.
 2. **Expand.** From the seeds, follow edges up to `expansion_depth` (2) hops, ignoring edges lighter than `edge_weight_floor` (0.1), up to `max_candidates` (50) nodes. `algorithm` is `bfs` (the default) or `ppr`, personalised PageRank from the seeds. PageRank needs `scipy`; without it, search falls back to the seeds.
 3. **Re-rank.** Every candidate gets a score:
@@ -91,6 +95,8 @@ Each result's `score` is this final score, and it gains a `context_graph` key wi
 ## Decay
 
 Edges and nodes fade unless they are used, so old, unused context stops crowding search results.
+
+<!-- diagram: cgl-decay -->
 
 | Setting (`context_graph.decay`) | Default | Meaning |
 |---|---|---|

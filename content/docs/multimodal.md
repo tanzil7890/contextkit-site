@@ -5,6 +5,8 @@ description: Store what is in an image as searchable memories.
 
 With a vision-capable LLM, ContextKit can read images in the messages you add. Each image is described by the LLM, and the description goes through fact extraction like any other message, so you can later search for what the picture showed.
 
+<!-- diagram: multimodal -->
+
 ## Turn on vision
 
 ```python

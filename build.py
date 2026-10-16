@@ -52,6 +52,8 @@ from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import PythonLexer
 
+import diagrams
+
 ROOT = Path(__file__).resolve().parent
 OUT = ROOT / "_site"
 CACHE = ROOT / ".cache"
@@ -527,6 +529,14 @@ def substitute(text: str, packages: dict[str, Package]) -> str:
     return TOKENS.sub(replace, text)
 
 
+DIAGRAM = re.compile(r"^<!-- diagram: ([a-z0-9-]+) -->$", re.M)
+
+
+def include_diagrams(text: str) -> str:
+    """Replace each `<!-- diagram: name -->` line with that diagram from diagrams.py."""
+    return DIAGRAM.sub(lambda match: diagrams.render(match.group(1)), text)
+
+
 def parse_front_matter(text: str) -> tuple[dict, str]:
     if not text.startswith("---\n"):
         return {}, text
@@ -721,6 +731,7 @@ class Site:
         path = CONTENT / "docs" / f"{slug_}.md"
         meta, text = parse_front_matter(path.read_text())
         text = substitute(text, self.packages)
+        text = include_diagrams(text)
         md = make_markdown()
         body = polish(md.convert(text))
         toc = [{"id": t["id"], "name": t["name"]} for t in md.toc_tokens if t["level"] == 2]
