@@ -88,7 +88,7 @@ GitHub Pages, deployed by `.github/workflows/deploy.yml`. One-time setup:
 
 1. **Settings → Pages → Source:** GitHub Actions.
 2. **Settings → Pages → Custom domain:** `contextkit.outhad.com`, then **Enforce HTTPS**.
-3. **DNS:** a `CNAME` record for `contextkit` at `outhad.com` pointing to `tanzil7890.github.io`. The landing page is served at `/` and the docs at `/docs/`, so the hosted cloud API and dashboard need their own hosts (for example `api.contextkit.outhad.com` and `app.contextkit.outhad.com`).
+3. **DNS:** a `CNAME` record for `contextkit` at `outhad.com` pointing to `tanzil7890.github.io`. The landing page is served at `/` and the docs at `/docs/`, and the hosted cloud lives on its own hosts: the API at `api.contextkit.outhad.com` (the SDK's `DEFAULT_HOST` from 1.10.0) and the dashboard at `app.contextkit.outhad.com`.
 
 ## License
 

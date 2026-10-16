@@ -14,6 +14,9 @@ show_unreleased = true
 # Flip to true once the hosted cloud is open for sign-ups. Until then the
 # cloud pages say so instead of sending people to a dashboard that is not live.
 cloud_open = false
+# The hosted cloud's dashboard, where people sign up and mint API keys. Its API
+# is at https://api.contextkit.outhad.com (the SDK's DEFAULT_HOST from 1.10.0).
+cloud_app = "https://app.contextkit.outhad.com"
 
 # Each package is read from PyPI on every build: its versions, release dates,
 # and the public API and config defaults of the modules listed below, parsed out

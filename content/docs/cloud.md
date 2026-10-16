@@ -31,9 +31,9 @@ client = MemoryClient(
 )
 ```
 
-- **API key.** `api_key`, or `OUTHAD_CONTEXTKIT_API_KEY`. Keys look like `ock_live_…` or `ock_test_…`, and are sent as `Authorization: Token <key>`. Test keys keep their data apart from live keys.
-- **Host.** `host`, then `OUTHAD_CONTEXTKIT_HOST`, then the built-in default (`DEFAULT_HOST` in the [SDK reference](/docs/reference/sdk/#constants)).
-- **Development fallback.** When you rely on the built-in default host and it cannot be reached, the client retries once against `http://localhost:8000` and stays there. Pass `host=` or `allow_dev_fallback=False` to turn that off.
+- **API key.** `api_key`, or `OUTHAD_CONTEXTKIT_API_KEY`. Keys are created in the dashboard (`app.contextkit.outhad.com`), look like `ock_live_…` or `ock_test_…`, and are sent as `Authorization: Token <key>`. Test keys keep their data apart from live keys.
+- **Host.** `host`, then `OUTHAD_CONTEXTKIT_HOST`, then the built-in default, `DEFAULT_HOST`. From 1.10.0 that is `https://api.contextkit.outhad.com`; the [SDK reference](/docs/reference/sdk/#constants) shows the value in the current release.
+- **Development fallback.** Pass `allow_dev_fallback=True` and, when the default host cannot be reached, the client retries once against `http://localhost:8000` (`DEV_HOST`) and stays there. From 1.10.0 it is off by default; up to 1.9.0 it was on unless you passed `host=` or `allow_dev_fallback=False`.
 - **Identity.** The constructor calls the server once to check the key, and fills in `client.org_id`, `client.project_id`, and `client.user_email`.
 
 Use it as a context manager, or call `client.close()`, to release the connection pool.
