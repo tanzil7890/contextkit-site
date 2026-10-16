@@ -118,6 +118,8 @@ Pass `include_archived=True` to `search` to expand into archived nodes too.
 
 The default `networkx` backend keeps the graph in memory. With `persist_path` set, the graph is loaded from that file when the `Memory` starts, but it is not saved automatically. Save it when you are done, or on a timer:
 
+<!-- diagram: cgl-persist -->
+
 ```python
 memory.context_graph.snapshot()           # writes persist_path
 print(memory.context_graph.stats())       # {"nodes": ..., "nodes_total": ..., "edges": ...}
@@ -138,6 +140,8 @@ memory.snapshot_context_graph("./graph-export.jsonl")             # export nodes
 past = memory.replay_context_graph(until=datetime(2026, 10, 1))   # the graph as it was then
 print(past.stats())
 ```
+
+<!-- diagram: cgl-changes -->
 
 Subscribe to changes as they happen. Each event has `event_type`, `target_id`, `timestamp`, `user_id`, and `payload`:
 
@@ -168,4 +172,22 @@ memory.subscribe_context_graph_changes(sink.send)
 
 ## Settings
 
-All settings live under `context_graph` in the config. The full list, with defaults, is in the [configuration reference](/docs/reference/config/).
+All settings live under `context_graph` in the config. These are the ones you are most likely to change; every field is in the [configuration reference](/docs/reference/config/).
+
+| Setting | Default | What it does |
+|---|---|---|
+| `enabled` | `False` | Turns the context graph on. |
+| `backend` | `"networkx"` | `"networkx"` (in process) or `"neo4j"` (the graph store's database). |
+| `persist_path` | `None` | File the `networkx` graph is loaded from at start and written to by `snapshot()`. |
+| `log_changes` | `True` | Append every change to the change log. |
+| `edges.enable_reply_to`, `enable_temporal_next`, `enable_document_link`, `enable_topic_similar` | `True` | Turn each kind of edge off on its own. |
+| `edges.reply_to_window_seconds` | `1800` | How close in time two memories must be for `REPLY_TO`. |
+| `edges.topic_min_similarity`, `edges.topic_top_k` | `0.75`, `5` | Cosine floor and per-memory cap for `TOPIC_SIMILAR`. |
+| `edges.llm.enabled` | `False` | [LLM edges](#llm-edges). |
+| `retrieval.enabled` | `True` | Use the graph in `search` unless `use_context_graph=False`. |
+| `retrieval.algorithm` | `"bfs"` | `"bfs"` or `"ppr"` (needs `scipy`). |
+| `retrieval.seed_top_k`, `expansion_depth`, `max_candidates`, `edge_weight_floor` | `10`, `2`, `50`, `0.1` | Seeds, hops, candidate cap, lightest edge followed. |
+| `retrieval.alpha_dense`, `beta_bm25`, `gamma_graph` | `0.55`, `0.15`, `0.30` | Ranking weights; [personalized retrieval](/docs/personalized-retrieval/) adds three more. |
+| `decay.half_life_days` | `30` | How fast edges and relevance fade. |
+| `decay.min_edge_weight`, `min_node_relevance` | `0.05`, `0.02` | Prune and archive thresholds. |
+| `decay.tick_on_read` | `True` | Run decay during search, at most once an hour. |

@@ -681,6 +681,74 @@ def cgl_decay() -> Fig:
     return f
 
 
+def cgl_persist() -> Fig:
+    f = Fig(
+        "cgl-persist", 720, 220,
+        "Left, the default networkx backend: the graph lives in the process's memory, is loaded from persist_path "
+        "when Memory starts, and is written back only when you call snapshot(); changes after the last snapshot are "
+        "lost when the process exits. Right, the neo4j backend: every process reads and writes the same Neo4j "
+        "database, so the graph is shared and survives restarts.",
+        "The default backend saves nothing on its own: <code>persist_path</code> is read at start and written only "
+        "by <code>snapshot()</code>. The <code>neo4j</code> backend writes as the graph changes, into the database "
+        "your <code>graph_store</code> already points at. " + key(KEY_OUT),
+    )
+    f.group(10, 10, 340, 200, "networkx · default")
+    f.node(28, 52, 140, 52, "graph", "in process memory")
+    f.store(214, 44, 120, 66, "persist_path", ".pkl file", "out")
+    f.arrow((214, 64), (168, 64), label="load at start", at=(191, 40))
+    f.arrow((168, 92), (214, 92), label="snapshot()", at=(191, 124))
+    f.raw('<line class="x" x1="90" y1="150" x2="104" y2="164"/><line class="x" x1="104" y1="150" x2="90" y2="164"/>')
+    f.text(114, 161, "process exits: changes since the", "lbl warn", "start")
+    f.text(114, 175, "last snapshot() are gone", "lbl warn", "start")
+    f.group(370, 10, 340, 200, "neo4j")
+    a = f.node(388, 40, 124, 42, "process A")
+    b = f.node(388, 104, 124, 42, "process B")
+    f.store(560, 40, 146, 106, "Neo4j", "MemoryNode · CTX_EDGE", "out")
+    f.arrow(a.r, (560, 61))
+    f.arrow(b.r, (560, 125))
+    f.text(536, 89, "reads", "lbl", "middle")
+    f.text(536, 102, "+ writes", "lbl", "middle")
+    f.text(540, 178, "same database as graph_store;", "lbl", "middle")
+    f.text(540, 192, "shared, survives restarts", "lbl", "middle")
+    return f
+
+
+def cgl_changes() -> Fig:
+    f = Fig(
+        "cgl-changes", 720, 300,
+        "Every change to the context graph, from add, update, delete, search-time decay and feedback, is appended "
+        "to an SQLite change log. Each subscription has its own queue of up to 10,000 events and its own thread; "
+        "when the queue is full the oldest event is dropped. A subscriber can be your function or a sink: webhook, "
+        "Kafka or server-sent events. replay_context_graph rebuilds a fresh graph from the log up to a time, and "
+        "snapshot_context_graph exports the current nodes and edges to a JSONL file.",
+        "The change log is the record; subscriptions, sinks and replay all read from it. A slow subscriber only "
+        "loses its own oldest events, and <code>from_event_id</code> lets a new one catch up from the log first. "
+        + key(KEY_OUT),
+    )
+    srcs = [("add · update · delete", None), ("search", "decay ticks"), ("record_feedback", None)]
+    for i, (t, s) in enumerate(srcs):
+        b = f.node(16, 30 + i * 52, 166, 40, t, s)
+        f.arrow(b.r, (190, b.cy), (190, 100), (200, 100), head=(i == 1))
+    cg = f.node(200, 64, 120, 72, "context graph", "nodes + edges")
+    f.store(356, 50, 150, 100, "change log", "SQLite, append-only", "out")
+    f.arrow(cg.r, (356, 100))
+    f.node(542, 26, 168, 50, "replay(until)", "fresh graph as of then", "out")
+    f.node(542, 100, 168, 66, "subscribe(callback)", "queue 10,000; drops oldest", sub2="from_event_id: past first")
+    f.arrow((506, 80), (524, 80), (524, 51), (542, 51))
+    f.arrow((506, 120), (524, 120), (524, 133), (542, 133))
+    targets = [("your function", None, 326, 104), ("WebhookSink", "HMAC, retries", 438, 100),
+               ("KafkaSink", "key target_id", 546, 92), ("SSESink", "stream()", 646, 64)]
+    f.raw('<polyline class="ln" points="626,166 626,206" />')
+    f.raw('<polyline class="ln" points="378,206 678,206" />')
+    f.text(632, 190, "callback", "lbl", "start")
+    for t, s, x, w in targets:
+        f.node(x, 226, w, 46, t, s)
+        f.arrow((x + w / 2, 206), (x + w / 2, 226))
+    f.node(162, 226, 152, 46, "JSONL file", "snapshot_context_graph", "out")
+    f.arrow((260, 136), (260, 226))
+    return f
+
+
 # =============================================================== Personalized retrieval (MSPR)
 
 
@@ -847,6 +915,8 @@ DIAGRAMS = {
     "cgl-links": cgl_links,
     "cgl-search": cgl_search,
     "cgl-decay": cgl_decay,
+    "cgl-persist": cgl_persist,
+    "cgl-changes": cgl_changes,
     "mspr": mspr,
     "tenants": tenants,
     "decay-lifecycle": decay_lifecycle,
