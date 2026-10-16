@@ -782,10 +782,7 @@ class Site:
         self.write(
             "/", "home.html",
             quickstart=(CONTENT / "snippets" / "quickstart.py").read_text().strip(),
-            unreleased={
-                slug_: self.pages[slug_].unreleased
-                for slug_ in ("context-graph", "personalized-retrieval", "tenants", "decay-and-versioning")
-            },
+            unreleased={slug_: page.unreleased for slug_, page in self.pages.items()},
         )
         for slug_, page in self.pages.items():
             if page.unreleased and not self.settings.get("show_unreleased", True):
