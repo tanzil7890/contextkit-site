@@ -36,3 +36,28 @@ for (const el of document.querySelectorAll("[data-pypi]")) {
     })
     .catch(() => {})
 }
+
+// Graph diagrams: hovering or focusing a memory shows only its links and the memories they reach.
+for (const svg of document.querySelectorAll("svg.dg-graph")) {
+  const nodes = [...svg.querySelectorAll(".gnode")]
+  const edges = [...svg.querySelectorAll(".gedge")]
+  const show = (key) => {
+    svg.classList.toggle("focusing", key !== null)
+    const near = new Set()
+    for (const edge of edges) {
+      const on = key !== null && (edge.dataset.src === key || edge.dataset.dst === key)
+      edge.classList.toggle("on", on)
+      if (on) near.add(edge.dataset.src).add(edge.dataset.dst)
+    }
+    for (const node of nodes) {
+      node.classList.toggle("on", node.dataset.node === key)
+      node.classList.toggle("near", near.has(node.dataset.node))
+    }
+  }
+  for (const node of nodes) {
+    node.addEventListener("mouseenter", () => show(node.dataset.node))
+    node.addEventListener("focus", () => show(node.dataset.node))
+    node.addEventListener("mouseleave", () => show(null))
+    node.addEventListener("blur", () => show(null))
+  }
+}

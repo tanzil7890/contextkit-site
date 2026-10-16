@@ -71,6 +71,8 @@ requires: outhad_contextkit.memory.context_graph   # optional
 - `{{ library.version }}`, `{{ library.install }}`, `{{ library.dist }}` and the same for `sdk` are replaced with values from PyPI.
 - Use `!!! note "Title"` or `!!! warning "Title"` for callouts.
 - `<!-- diagram: name -->` on a line of its own inlines a diagram from `diagrams.py`. Each diagram is a function there drawn on a small grid helper; colours come from the `.dg` rules in `static/site.css`, so they follow light and dark mode. Orange outline means an LLM call, blue a scope or policy check, green what is stored or returned, dashed optional or not connected.
+- Some diagrams draw a real run of the library instead of fixed numbers: `cgl-graph` and `cgl-walk` read `content/data/context-graph.json`. Regenerate it for each library release with `python -I tools/diagram_data.py content/data/context-graph.json` in an environment that has that release, `networkx` and `sentence-transformers` (see the script's docstring), and commit the JSON.
+- `preview_pages` in `site.toml` lists pages that are built at their URL but left out of the menu, the previous/next links and the sitemap, and marked `noindex`. Use one to try a change before it replaces a live page; `preview_of: /docs/page/` in its front matter adds a link back to the live page.
 - Link between pages with absolute paths, such as `/docs/scoping/#filter-by-metadata`.
 
 Add a page by creating `content/docs/<slug>.md` and listing `<slug>` in a `[[nav]]` section of `site.toml`.

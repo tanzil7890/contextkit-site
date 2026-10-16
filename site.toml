@@ -17,6 +17,9 @@ cloud_open = false
 # The hosted cloud's dashboard, where people sign up and mint API keys. Its API
 # is at https://api.contextkit.outhad.com (the SDK's DEFAULT_HOST from 1.10.0).
 cloud_app = "https://app.contextkit.outhad.com"
+# Pages built at their URL but kept out of the menu and the sitemap, for trying
+# out a page before it replaces the live one.
+preview_pages = ["context-graph-preview"]
 # Where "Reach out to the team" links go, on pages marked `access: team`.
 # Use a mailto: link or a booking page once the team has one.
 contact_url = "https://github.com/tanzil7890/contextkit-site/issues/new?title=Access%20request%3A%20episodic%20memory"

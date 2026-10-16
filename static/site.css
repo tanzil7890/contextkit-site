@@ -1265,3 +1265,179 @@ figure.diagram .k.out {
   fill: var(--muted);
   opacity: 0.18;
 }
+/* Graph diagrams drawn from a real run of the library (diagrams.py: cgl-graph, cgl-walk). */
+.dg-scroll {
+  overflow-x: auto;
+}
+figure.diagram.walk {
+  overflow: visible;
+}
+.walk-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 22px;
+}
+.walk-step {
+  min-width: 0;
+  margin: 0;
+  padding: 0 0 20px;
+  border-bottom: 1px solid var(--line);
+}
+.walk-step:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+.walk-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 6px;
+  font-weight: 600;
+  color: var(--text);
+}
+.walk-num {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--link);
+  border-radius: 50%;
+  font: 600 12px var(--mono);
+  color: var(--link);
+}
+.walk-text {
+  margin: 0 0 12px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.dg .region {
+  fill: var(--panel-2);
+  stroke: var(--line);
+  stroke-width: 1.2;
+}
+.dg .region.other {
+  fill: none;
+  stroke: var(--warn);
+  stroke-dasharray: 6 4;
+}
+.dg text.gl.warn {
+  fill: var(--warn);
+}
+.dg .ge {
+  fill: none;
+  stroke: var(--muted);
+  stroke-linecap: round;
+}
+.dg .ge.e-reply {
+  stroke: var(--text);
+}
+.dg .ge.e-doc {
+  stroke-dasharray: 9 5;
+}
+.dg .ge.e-topic {
+  stroke-dasharray: 1 5;
+}
+.dg .ge.e-llm {
+  stroke-dasharray: 7 4 1 4;
+}
+.dg .gedge.crosses .ge {
+  stroke: var(--warn);
+}
+.dg .head.warn {
+  fill: var(--warn);
+}
+.dg .gdot {
+  fill: var(--panel);
+  stroke: var(--text);
+  stroke-width: 2;
+}
+.dg .gnode.other .gdot {
+  stroke: var(--warn);
+}
+.dg .seed-ring {
+  fill: none;
+  stroke: var(--link);
+  stroke-width: 2;
+}
+.dg .num {
+  font: 600 12px var(--mono);
+  fill: var(--link);
+}
+.dg .num.warn {
+  fill: var(--warn);
+}
+.dg .gnode.dim,
+.dg .gedge.dim {
+  opacity: 0.28;
+}
+.dg .s-dense {
+  fill: var(--link);
+}
+.dg .s-lex {
+  fill: var(--link);
+  opacity: 0.45;
+}
+.dg .s-graph {
+  fill: var(--muted);
+  opacity: 0.55;
+}
+.dg .cut {
+  stroke: var(--text);
+  stroke-width: 1.2;
+  stroke-dasharray: 5 4;
+}
+.dg-graph .gnode:focus {
+  outline: none;
+}
+.dg-graph .gnode:focus-visible .gdot {
+  stroke: var(--link);
+  stroke-width: 3.5;
+}
+.dg-graph .gnode,
+.dg-graph .gedge {
+  transition: opacity 0.15s;
+}
+.dg-graph.focusing .gedge:not(.on) {
+  opacity: 0.08;
+}
+.dg-graph.focusing .gnode:not(.on):not(.near) {
+  opacity: 0.25;
+}
+@media (prefers-reduced-motion: reduce) {
+  .dg-graph .gnode,
+  .dg-graph .gedge {
+    transition: none;
+  }
+}
+.dg-graph text.lbl,
+.dg-graph text.num {
+  paint-order: stroke;
+  stroke: var(--panel);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+/* On narrow screens the drawings keep a readable size and scroll sideways; say so, and shade the edge that has more. */
+@media (max-width: 760px) {
+  .dg-scroll {
+    background:
+      linear-gradient(to right, var(--panel) 30%, transparent) left center / 32px 100% no-repeat local,
+      linear-gradient(to left, var(--panel) 30%, transparent) right center / 32px 100% no-repeat local,
+      radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, 0.35), transparent) left center / 12px 100% no-repeat scroll,
+      radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, 0.35), transparent) right center / 12px 100% no-repeat scroll;
+  }
+  .dg-scroll::before {
+    content: "Drag sideways to see the whole drawing";
+    position: sticky;
+    left: 0;
+    display: block;
+    width: max-content;
+    margin: 0 0 6px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+}

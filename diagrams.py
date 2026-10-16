@@ -15,8 +15,11 @@ dark themes. The colour language matches the landing page's flows:
 """
 from __future__ import annotations
 
+import functools
+import json
 from dataclasses import dataclass
 from html import escape
+from pathlib import Path
 
 # Rough advance widths, used only to warn when a label will not fit its box.
 CHAR_W = {"t": 7.5, "s": 6.0, "lbl": 6.0, "": 6.6}
@@ -911,7 +914,309 @@ def config_layers() -> Fig:
     return f
 
 
+# =============================================================== Context graph, from a real run
+#
+# These figures draw content/data/context-graph.json, which tools/diagram_data.py
+# writes from a run of the released library. Every node, link, weight and score is
+# the library's own output; only the positions below are chosen by hand.
+
+DATA = Path(__file__).resolve().parent / "content" / "data"
+
+GRAPH_POS = {
+    "sam": (92, 104), "pizza": (290, 104), "margherita": (460, 104), "dairy": (630, 104),
+    "menu": (360, 238), "marinara": (560, 238),
+}
+EDGE_KIND = {
+    "REPLY_TO": ("e-reply", "said right after"),
+    "TEMPORAL_NEXT": ("e-next", "next in the same chat"),
+    "DOCUMENT_LINK": ("e-doc", "same document"),
+    "TOPIC_SIMILAR": ("e-topic", "similar topic"),
+    "UPDATED_FROM": ("e-doc", "newer version"),
+    "SUPPORTS": ("e-llm", "LLM: supports"),
+    "CONTRADICTS": ("e-llm", "LLM: contradicts"),
+    "REFINES": ("e-llm", "LLM: refines"),
+    "ELABORATES": ("e-llm", "LLM: elaborates"),
+}
+NODE_R = 9
+
+
+@functools.lru_cache(maxsize=None)
+def run_data(name: str) -> dict:
+    return json.loads((DATA / f"{name}.json").read_text())
+
+
+def num(value: float) -> str:
+    """0.6 for 0.6000, 0.87 for 0.8672: the shortest form that is still exact to two places."""
+    text = f"{value:.2f}"
+    return text[:-1] if text.endswith("0") else text
+
+
+def wrap(text: str, width: int = 18) -> list[str]:
+    lines, line = [], ""
+    for word in text.split():
+        if line and len(line) + 1 + len(word) > width:
+            lines.append(line)
+            line = word
+        else:
+            line = f"{line} {word}".strip()
+    return lines + [line] if line else lines
+
+
+def _graph_defs(fid: str) -> str:
+    heads = ""
+    for kind in ("a", "warn", "em"):
+        heads += (
+            f'<marker id="{fid}-{kind}" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" '
+            f'markerWidth="10" markerHeight="10" '
+            f'orient="auto-start-reverse"><path class="head {kind}" d="M0,0 L10,5 L0,10 z"/></marker>'
+        )
+    return f"<defs>{heads}</defs>"
+
+
+def _owner(run: dict, key: str) -> str:
+    return next(n["user_id"] for n in run["nodes"] if n["key"] == key)
+
+
+def graph_svg(run: dict, fid: str, state: str, aria: str) -> str:
+    """The memory graph. state: "all" (every link, labelled), "seeds" or "spread"."""
+    you = run["user_id"]
+    cand = {c["key"]: c for c in run["candidates"]}
+    seeds = {s["key"]: s["score"] for s in run["seeds"]}
+    parts: list[str] = []
+    height = 352 if state == "all" else 300
+
+    # One shaded region per user; another user's region is outlined in the warning colour.
+    users: dict[str, list[tuple[float, float]]] = {}
+    for n in run["nodes"]:
+        users.setdefault(n["user_id"], []).append(GRAPH_POS[n["key"]])
+    for user, pts in users.items():
+        xs, ys = [p[0] for p in pts], [p[1] for p in pts]
+        x, y = min(xs) - 72, min(ys) - 62
+        w, h = max(xs) + 72 - x, max(ys) + 58 - y
+        other = user != you
+        parts.append(f'<rect class="region{" other" if other else ""}" x="{x}" y="{y}" width="{w}" height="{h}" rx="16"/>')
+        parts.append(f'<text class="gl{" warn" if other else ""}" x="{x + 12}" y="{y + 17}">user {escape(user)}</text>')
+        if other:
+            parts.append(f'<text class="gl warn" x="{x + 12}" y="{y + 30}">another user</text>')
+
+    # Runs and documents that hold more than one memory, in the overview only.
+    if state == "all":
+        groups: dict[str, list[tuple[float, float]]] = {}
+        for n in run["nodes"]:
+            if n.get("doc_id"):
+                groups.setdefault(f"document {n['doc_id']}", []).append(GRAPH_POS[n["key"]])
+            else:
+                groups.setdefault(f"run {n['run_id']}", []).append(GRAPH_POS[n["key"]])
+        for label, pts in groups.items():
+            if len(pts) < 2:
+                continue
+            xs, ys = [p[0] for p in pts], [p[1] for p in pts]
+            x, y = min(xs) - 46, min(ys) - 40
+            parts.append(f'<rect class="grp" x="{x}" y="{y}" width="{max(xs) + 46 - x}" height="{max(ys) + 46 - y}" rx="10"/>')
+            parts.append(f'<text class="gl" x="{x + 8}" y="{y + 13}">{escape(label)}</text>')
+
+    # Links. Parallel links between the same two memories are drawn side by side.
+    pairs: dict[tuple[str, str], list[dict]] = {}
+    for e in run["edges"]:
+        pairs.setdefault(tuple(sorted((e["src"], e["dst"]))), []).append(e)
+    for pair, edges in pairs.items():
+        edges.sort(key=lambda e: -e["weight"])
+        used = state == "all" or (
+            state == "spread" and all(k in cand for k in pair) and any(k in seeds for k in pair)
+        )
+        for i, e in enumerate(edges):
+            (x1, y1), (x2, y2) = GRAPH_POS[e["src"]], GRAPH_POS[e["dst"]]
+            dx, dy = x2 - x1, y2 - y1
+            length = (dx * dx + dy * dy) ** 0.5
+            ux, uy = dx / length, dy / length
+            off = (i - (len(edges) - 1) / 2) * 7
+            ox, oy = -uy * off, ux * off
+            gap = NODE_R + 5
+            a = (x1 + ux * gap + ox, y1 + uy * gap + oy)
+            b = (x2 - ux * gap + ox, y2 - uy * gap + oy)
+            cls, plain = EDGE_KIND.get(e["type"], ("e-doc", e["type"].lower()))
+            crosses = _owner(run, e["src"]) != _owner(run, e["dst"])
+            head = "warn" if crosses else "a"
+            width = 1 + 2.5 * e["weight"]
+            title = f"{plain} ({e['type']}), weight {num(e['weight'])}: {e['src']} → {e['dst']}"
+            parts.append(
+                f'<g class="gedge{" dim" if not used else ""}{" crosses" if crosses else ""}" '
+                f'data-src="{e["src"]}" data-dst="{e["dst"]}"><title>{escape(title)}</title>'
+                f'<line class="ge {cls}" x1="{a[0]:.1f}" y1="{a[1]:.1f}" x2="{b[0]:.1f}" y2="{b[1]:.1f}" '
+                f'stroke-width="{width:.2f}" marker-end="url(#{fid}-{head})"/>'
+            )
+            if state == "all":
+                mx = (x1 + x2) / 2
+                my = min(y1, y2) - 16 - 12 * (len(edges) - 1 - i)
+                text = f"{e['type']} {num(e['weight'])}"
+                parts.append(f'<text class="lbl mono{" warn" if crosses else ""}" x="{mx:.0f}" y="{my:.0f}" text-anchor="middle">{escape(text)}</text>')
+            parts.append("</g>")
+
+    # Memories.
+    for n in run["nodes"]:
+        key, (x, y) = n["key"], GRAPH_POS[n["key"]]
+        other = n["user_id"] != you
+        dim = (state == "seeds" and key not in seeds) or (state == "spread" and key not in cand)
+        where = f"document {n['doc_id']}" if n.get("doc_id") else f"chat {n['run_id']}"
+        title = f"“{n['text']}”, user {n['user_id']}, {where}"
+        parts.append(
+            f'<g class="gnode{" other" if other else ""}{" dim" if dim else ""}" tabindex="0" data-node="{key}" '
+            f'role="img" aria-label="{escape(title)}"><title>{escape(title)}</title>'
+        )
+        if state in ("seeds", "spread") and key in seeds:
+            parts.append(f'<circle class="seed-ring" cx="{x}" cy="{y}" r="{NODE_R + 6}"/>')
+        parts.append(f'<circle class="gdot" cx="{x}" cy="{y}" r="{NODE_R}"/>')
+        for j, line in enumerate(wrap(n["text"])):
+            parts.append(f'<text x="{x}" y="{y + 26 + j * 14}" text-anchor="middle">{escape(line)}</text>')
+        if state == "seeds" and key in seeds:
+            parts.append(f'<text class="num" x="{x + 18}" y="{y - 12}">{num(seeds[key])}</text>')
+        if state == "spread" and key in cand and key not in seeds:
+            parts.append(f'<text class="num{" warn" if other else ""}" x="{x}" y="{y - 18}" text-anchor="middle">reach {num(cand[key]["graph"])}</text>')
+        parts.append("</g>")
+
+    if state == "all":
+        x = 20
+        for kind in ("REPLY_TO", "TEMPORAL_NEXT", "DOCUMENT_LINK", "TOPIC_SIMILAR"):
+            cls, plain = EDGE_KIND[kind]
+            parts.append(f'<line class="ge {cls}" x1="{x}" y1="{height - 30}" x2="{x + 28}" y2="{height - 30}" stroke-width="2.5"/>')
+            parts.append(f'<text x="{x + 36}" y="{height - 26}">{escape(plain)}</text>')
+            parts.append(f'<text class="lbl mono" x="{x + 36}" y="{height - 12}">{kind}</text>')
+            x += 172
+
+    return (
+        f'<svg class="dg dg-graph" viewBox="0 0 720 {height}" role="group" aria-label="{escape(aria)}" '
+        f'xmlns="http://www.w3.org/2000/svg">{_graph_defs(fid)}{"".join(parts)}</svg>'
+    )
+
+
+def score_svg(run: dict, fid: str, aria: str) -> str:
+    """Every candidate's score as a stacked bar, best first, with the limit drawn as a cut."""
+    s = run["settings"]
+    you = run["user_id"]
+    texts = {n["key"]: n["text"] for n in run["nodes"]}
+    rows = run["candidates"]
+    x0, scale, top, rh, gap = 300, 500, 58, 38, 22
+    height = top + rh * len(rows) + gap + 16
+    parts = []
+    legend = [("s-dense", f"{num(s['alpha_dense'])} × similarity"), ("s-lex", f"{num(s['beta_bm25'])} × shared words"),
+              ("s-graph", f"{num(s['gamma_graph'])} × link reach")]
+    lx = x0
+    for cls, label in legend:
+        parts.append(f'<rect class="{cls}" x="{lx}" y="14" width="14" height="10" rx="2"/>')
+        parts.append(f'<text x="{lx + 20}" y="23">{escape(label)}</text>')
+        lx += 140
+    parts.append('<text class="gl" x="20" y="23">memory</text>')
+    parts.append(f'<text class="gl" x="{x0}" y="44">score</text>')
+    for i, c in enumerate(rows):
+        y = top + i * rh + (gap if i >= run["limit"] else 0)
+        other = c["user_id"] != you
+        how = "seed" if c["was_seed"] else "reached by a link"
+        who = f"user {c['user_id']}" + (" · another user" if other else "")
+        parts.append(f'<text x="20" y="{y + 13}">{escape(texts[c["key"]])}</text>')
+        parts.append(f'<text class="lbl{" warn" if other else ""}" x="20" y="{y + 27}">{escape(how + " · " + who)}</text>')
+        x = x0
+        for cls, weight, value in (("s-dense", s["alpha_dense"], c["dense"]), ("s-lex", s["beta_bm25"], c["lexical"]),
+                                   ("s-graph", s["gamma_graph"], c["graph"])):
+            w = weight * value * c["relevance"] * scale
+            parts.append(f'<rect class="{cls}" x="{x:.1f}" y="{y + 2}" width="{w:.1f}" height="24" rx="2">'
+                         f'<title>{escape(f"{num(weight)} × {num(value)}")}</title></rect>')
+            x += w
+        parts.append(f'<text class="t{" warn" if other else ""}" x="{x + 8:.1f}" y="{y + 19}">{num(c["score"])}</text>')
+        if i == run["limit"] - 1:
+            cut = y + rh - 3
+            parts.append(f'<line class="cut" x1="16" y1="{cut}" x2="704" y2="{cut}"/>')
+            parts.append(f'<text class="lbl em" x="704" y="{cut + 14}" text-anchor="end">limit={run["limit"]}: only the memories above this line are returned</text>')
+    return (
+        f'<svg class="dg dg-bars" viewBox="0 0 720 {height}" role="img" aria-label="{escape(aria)}" '
+        f'xmlns="http://www.w3.org/2000/svg">{"".join(parts)}</svg>'
+    )
+
+
+def _source_note(run: dict) -> str:
+    return (f"Real output of <code>outhad-contextkitai {escape(run['library'])}</code> with the default context-graph "
+            f"settings; similarities come from the <code>{escape(run['embedder'].split('/')[-1])}</code> embedding model.")
+
+
+def cgl_graph() -> str:
+    run = run_data("context-graph")
+    you = run["user_id"]
+    crossing = [e for e in run["edges"] if _owner(run, e["src"]) != _owner(run, e["dst"])]
+    aria = "Memory graph. " + " ".join(
+        f"{e['src']} to {e['dst']}: {e['type']} {num(e['weight'])}." for e in run["edges"])
+    note = ""
+    if crossing:
+        note = (f" The highlighted link joins another user's memory to {you}'s: topic links are not limited to one "
+                f"user, which is why the <a href=\"#how-search-ranks\">scoping warning</a> below matters.")
+    return (
+        f'<figure class="diagram" id="fig-cgl-graph"><div class="dg-scroll">{graph_svg(run, "cgl-graph", "all", aria)}</div>'
+        f"<figcaption>Each dot is a memory and each line a link the library made when the memory was added; a "
+        f"thicker line is a stronger link. Hover or tab to a memory to see only its links.{note}"
+        f'<span class="keys">{_source_note(run)}</span></figcaption></figure>'
+    )
+
+
+def cgl_walk() -> str:
+    run = run_data("context-graph")
+    you, limit = run["user_id"], run["limit"]
+    texts = {n["key"]: n["text"] for n in run["nodes"]}
+    seeds = run["seeds"]
+    cand = run["candidates"]
+    neighbours = [c for c in cand if not c["was_seed"]]
+    s = run["settings"]
+
+    def q(key):
+        return f"“{escape(texts[key])}”"
+
+    seed_list = ", ".join(f"{q(x['key'])} ({num(x['score'])})" for x in seeds)
+    step1 = (f"Search starts the way it does without the graph: it compares the question with {you}'s memories "
+             f"and keeps the closest. With <code>limit={limit}</code> these become the starting points, called "
+             f"seeds: {seed_list}.")
+    others = [c for c in neighbours if c["user_id"] != you]
+    step2 = (f"From each seed it follows links, up to {s['expansion_depth']} steps away. A memory it reaches gets a "
+             f"<em>reach</em>: the strength of the link it came through, multiplied along the way.")
+    own_full = [c for c in neighbours if c["user_id"] == you and c["graph"] >= 0.999]
+    if own_full:
+        step2 += f" {q(own_full[0]['key'])} was said right after a seed, so its reach is 1.0, as high as a seed's."
+    if others:
+        step2 += (f" Links are not limited to one user, so {q(others[0]['key'])}, which belongs to "
+                  f"{escape(others[0]['user_id'])}, is reached too.")
+    results = run["results"]
+    dropped = [x["key"] for x in seeds if x["key"] not in results]
+    foreign = [k for k in results if _owner(run, k) != you]
+    step3 = (f"Every memory found gets one score: {num(s['alpha_dense'])} × how similar it is to the question, "
+             f"{num(s['beta_bm25'])} × how many of its words it shares, and {num(s['gamma_graph'])} × its reach. "
+             f"The {limit} highest are returned.")
+    if foreign and dropped:
+        c = next(x for x in cand if x["key"] == foreign[0])
+        step3 += f" Here {q(foreign[0])} scored {num(c['score'])} and took the place of {you}'s own {q(dropped[0])}."
+    plain = " · ".join(f"{q(p['key'])} {num(p['score'])}" for p in run["plain_results"])
+    step3 += f" Without the graph the results would be: {plain}."
+
+    a1 = "Step 1: the seeds. " + ", ".join(f"{x['key']} {num(x['score'])}" for x in seeds) + "."
+    a2 = "Step 2: memories reached by links. " + ", ".join(
+        f"{c['key']} reach {num(c['graph'])}" for c in neighbours) + "."
+    a3 = ("Step 3: scores, best first. " + ", ".join(f"{c['key']} {num(c['score'])}" for c in cand)
+          + f". The first {limit} are returned.")
+    steps = [
+        ("1", "Find the closest memories", step1, graph_svg(run, "cgl-walk-1", "seeds", a1)),
+        ("2", "Follow their links", step2, graph_svg(run, "cgl-walk-2", "spread", a2)),
+        ("3", f"Score everything, keep the best {limit}", step3, score_svg(run, "cgl-walk-3", a3)),
+    ]
+    items = "".join(
+        f'<li class="walk-step"><p class="walk-title"><span class="walk-num">{n}</span>{escape(title)}</p>'
+        f'<p class="walk-text">{body}</p><div class="dg-scroll">{svg}</div></li>'
+        for n, title, body, svg in steps
+    )
+    call = escape(f'memory.search("{run["query"]}", user_id="{you}", limit={limit})')
+    return (
+        f'<figure class="diagram walk" id="fig-cgl-walk"><ol class="walk-steps">{items}</ol>'
+        f"<figcaption>What <code>{call}</code> does with the context graph on. {_source_note(run)}</figcaption></figure>"
+    )
+
+
 DIAGRAMS = {
+    "cgl-graph": cgl_graph,
+    "cgl-walk": cgl_walk,
     "cgl-links": cgl_links,
     "cgl-search": cgl_search,
     "cgl-decay": cgl_decay,
@@ -940,6 +1245,8 @@ def render(name: str) -> str:
     if name not in DIAGRAMS:
         raise SystemExit(f"unknown diagram {name!r}; known: {', '.join(sorted(DIAGRAMS))}")
     fig = DIAGRAMS[name]()
+    if isinstance(fig, str):
+        return fig
     for warning in fig.warnings:
         print(f"diagram warning: {warning}")
     return fig.render()

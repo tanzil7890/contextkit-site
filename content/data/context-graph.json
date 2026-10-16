@@ -1,0 +1,206 @@
+{
+  "library": "0.1.3",
+  "embedder": "sentence-transformers/all-MiniLM-L6-v2",
+  "query": "Which pizza should I order?",
+  "user_id": "maya",
+  "limit": 3,
+  "settings": {
+    "seed_top_k": 10,
+    "expansion_depth": 2,
+    "max_candidates": 50,
+    "edge_weight_floor": 0.1,
+    "alpha_dense": 0.55,
+    "beta_bm25": 0.15,
+    "gamma_graph": 0.3,
+    "topic_min_similarity": 0.75
+  },
+  "nodes": [
+    {
+      "key": "pizza",
+      "text": "I love pizza",
+      "user_id": "maya",
+      "run_id": "chat-1",
+      "doc_id": null,
+      "relevance": 1.0
+    },
+    {
+      "key": "margherita",
+      "text": "Margherita is my favourite pizza",
+      "user_id": "maya",
+      "run_id": "chat-1",
+      "doc_id": null,
+      "relevance": 1.0
+    },
+    {
+      "key": "dairy",
+      "text": "I'm avoiding dairy this month",
+      "user_id": "maya",
+      "run_id": "chat-1",
+      "doc_id": null,
+      "relevance": 1.0
+    },
+    {
+      "key": "menu",
+      "text": "Menu: margherita, marinara, diavola",
+      "user_id": "maya",
+      "run_id": "menu-page-1",
+      "doc_id": "menu.pdf",
+      "relevance": 1.0
+    },
+    {
+      "key": "marinara",
+      "text": "Marinara is made without cheese",
+      "user_id": "maya",
+      "run_id": "menu-page-2",
+      "doc_id": "menu.pdf",
+      "relevance": 1.0
+    },
+    {
+      "key": "sam",
+      "text": "Pizza is my favourite food",
+      "user_id": "sam",
+      "run_id": "chat-9",
+      "doc_id": null,
+      "relevance": 1.0
+    }
+  ],
+  "edges": [
+    {
+      "src": "margherita",
+      "dst": "dairy",
+      "type": "REPLY_TO",
+      "weight": 1.0
+    },
+    {
+      "src": "margherita",
+      "dst": "dairy",
+      "type": "TEMPORAL_NEXT",
+      "weight": 0.6
+    },
+    {
+      "src": "marinara",
+      "dst": "menu",
+      "type": "DOCUMENT_LINK",
+      "weight": 0.8
+    },
+    {
+      "src": "pizza",
+      "dst": "margherita",
+      "type": "REPLY_TO",
+      "weight": 1.0
+    },
+    {
+      "src": "pizza",
+      "dst": "margherita",
+      "type": "TEMPORAL_NEXT",
+      "weight": 0.6
+    },
+    {
+      "src": "sam",
+      "dst": "pizza",
+      "type": "TOPIC_SIMILAR",
+      "weight": 0.8672
+    }
+  ],
+  "seeds": [
+    {
+      "key": "pizza",
+      "score": 0.6058
+    },
+    {
+      "key": "margherita",
+      "score": 0.5945
+    },
+    {
+      "key": "menu",
+      "score": 0.3915
+    }
+  ],
+  "candidates": [
+    {
+      "key": "pizza",
+      "score": 0.6932,
+      "dense": 0.6058,
+      "lexical": 0.4,
+      "graph": 1.0,
+      "relevance": 1.0,
+      "was_seed": true,
+      "hop": 0,
+      "user_id": "maya"
+    },
+    {
+      "key": "margherita",
+      "score": 0.657,
+      "dense": 0.5945,
+      "lexical": 0.2,
+      "graph": 1.0,
+      "relevance": 1.0,
+      "was_seed": true,
+      "hop": 0,
+      "user_id": "maya"
+    },
+    {
+      "key": "sam",
+      "score": 0.6443,
+      "dense": 0.6439,
+      "lexical": 0.2,
+      "graph": 0.8672,
+      "relevance": 1.0,
+      "was_seed": false,
+      "hop": 1,
+      "user_id": "sam"
+    },
+    {
+      "key": "menu",
+      "score": 0.5153,
+      "dense": 0.3915,
+      "lexical": 0.0,
+      "graph": 1.0,
+      "relevance": 1.0,
+      "was_seed": true,
+      "hop": 0,
+      "user_id": "maya"
+    },
+    {
+      "key": "dairy",
+      "score": 0.4259,
+      "dense": 0.1743,
+      "lexical": 0.2,
+      "graph": 1.0,
+      "relevance": 1.0,
+      "was_seed": false,
+      "hop": 1,
+      "user_id": "maya"
+    },
+    {
+      "key": "marinara",
+      "score": 0.3742,
+      "dense": 0.244,
+      "lexical": 0.0,
+      "graph": 0.8,
+      "relevance": 1.0,
+      "was_seed": false,
+      "hop": 1,
+      "user_id": "maya"
+    }
+  ],
+  "results": [
+    "pizza",
+    "margherita",
+    "sam"
+  ],
+  "plain_results": [
+    {
+      "key": "pizza",
+      "score": 0.6058
+    },
+    {
+      "key": "margherita",
+      "score": 0.5945
+    },
+    {
+      "key": "menu",
+      "score": 0.3915
+    }
+  ]
+}
