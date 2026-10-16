@@ -54,7 +54,7 @@ memory.backfill_context_graph(user_id="u1")   # {"nodes": 42, "edges": 117}
 | `UPDATED_FROM` | `rollback` writes a new version of a memory (see [versioning](/docs/decay-and-versioning/#versions)) | 1.0 |
 | `SUPPORTS`, `CONTRADICTS`, `REFINES`, `ELABORATES` | The LLM labels a pair of similar memories, when LLM edges are on | The LLM's confidence |
 
-Turn individual edge types off under `context_graph.edges`, for example `"edges": {"enable_topic_similar": False}`.
+`DOCUMENT_LINK` and `TOPIC_SIMILAR` only join memories of the same user and agent, and of the same tenant when both have one. Turn individual edge types off under `context_graph.edges`, for example `"edges": {"enable_topic_similar": False}`.
 
 ### LLM edges
 
@@ -89,8 +89,8 @@ score = (alpha_dense · dense + beta_bm25 · lexical + gamma_graph · graph) × 
 
 Each result's `score` is this final score, and it gains a `context_graph` key with the parts: `dense`, `lexical`, `graph`, `frequency`, `personal`, `success`, and `was_seed`. When any edges connect the results, the response has a `subgraph` list of `{"src", "dst", "type", "weight"}`; read it with `hits.get("subgraph", [])`, since it is left out when empty.
 
-!!! warning "Graph expansion is not scoped by user"
-    `TOPIC_SIMILAR` edges are built across all memories in the store, and expansion does not re-check `user_id`, `agent_id`, or `run_id`. A search for one user can therefore return a graph neighbour that belongs to another user. If one store serves many users, keep the graph off or check each result's `user_id` before using it.
+!!! warning "Upgrade to 0.1.4 if one store serves several users"
+    From 0.1.4, graph search stays within the `user_id`, `agent_id`, and `run_id` you pass: a memory reached through a link is returned only when it belongs to them. In 0.1.3 and earlier, topic links joined memories of different users and expansion did not check them, so a search for one user could return another user's memory. Upgrade with `pip install -U outhad-contextkitai`. A graph built before 0.1.4 can still hold links between users; search ignores them, and `memory.reset_context_graph()` followed by `memory.backfill_context_graph()` removes them.
 
 ## Decay
 
@@ -125,13 +125,13 @@ memory.context_graph.snapshot()           # writes persist_path
 print(memory.context_graph.stats())       # {"nodes": ..., "nodes_total": ..., "edges": ...}
 ```
 
-For large graphs, or to share one graph between processes, use `"backend": "neo4j"`, which stores nodes and edges in the Neo4j database configured as your [graph store](/docs/graph-memory/).
+For large graphs, or to share one graph between processes, use `"backend": "neo4j"`, which stores nodes and edges in the Neo4j database configured as your [graph store](/docs/graph-memory/). From 0.1.4, `"backend": "postgres"` keeps the graph, its embeddings, and the change log in the Postgres database set as your [state store](/docs/configuration/#state-store) instead.
 
 `memory.reset_context_graph()` drops every node and edge, and leaves the vector store and history alone.
 
 ## Change log, replay, and streaming
 
-With `log_changes` on (the default), every change to the graph is appended to `context_graph_changes.db`, in the folder of `persist_path`, or `~/.outhad_contextkit/` when it is not set.
+With `log_changes` on (the default), every change to the graph is appended to `context_graph_changes.db`, in the folder of `persist_path`, or `~/.outhad_contextkit/` when it is not set. With the `postgres` backend it goes to the `ck_graph_changes` table.
 
 ```python
 from datetime import datetime
@@ -177,7 +177,7 @@ All settings live under `context_graph` in the config. These are the ones you ar
 | Setting | Default | What it does |
 |---|---|---|
 | `enabled` | `False` | Turns the context graph on. |
-| `backend` | `"networkx"` | `"networkx"` (in process) or `"neo4j"` (the graph store's database). |
+| `backend` | `"networkx"` | `"networkx"` (in process), `"neo4j"` (the graph store's database), or, from 0.1.4, `"postgres"` (the [state store](/docs/configuration/#state-store)). |
 | `persist_path` | `None` | File the `networkx` graph is loaded from at start and written to by `snapshot()`. |
 | `log_changes` | `True` | Append every change to the change log. |
 | `edges.enable_reply_to`, `enable_temporal_next`, `enable_document_link`, `enable_topic_similar` | `True` | Turn each kind of edge off on its own. |

@@ -580,19 +580,19 @@ def cgl_links() -> Fig:
         "Five memories as graph nodes. 'I love pizza' and 'Italian is the best' were added five minutes apart in "
         "the same run, so they get REPLY_TO (1.0) and TEMPORAL_NEXT (0.6). Two menu memories share a doc_id and get "
         "DOCUMENT_LINK (0.8). 'Menu: margherita' is topic-similar to 'I love pizza' (0.79). 'Pizza is the best' "
-        "belongs to another user and is still linked to 'Italian is the best' by TOPIC_SIMILAR (0.88).",
+        "is just as close in topic but belongs to another user, so it gets no link.",
         "Edges come from where and when memories were added (<code>REPLY_TO</code>, <code>TEMPORAL_NEXT</code>, "
         "<code>DOCUMENT_LINK</code>) and from how alike their embeddings are (<code>TOPIC_SIMILAR</code>, weighted by "
-        "the cosine). Topic links are not limited to one user, which is why the highlighted memory can sit one hop "
-        "from yours.",
+        "the cosine). Links only join memories of the same user and agent, so another user's memory is never one "
+        "hop from yours.",
     )
     a1 = f.node(20, 40, 150, 54, "I love pizza", "u1 · run r1 · 10:00")
     b1 = f.node(290, 40, 152, 54, "Italian is the best", "u1 · run r1 · 10:05")
-    c1 = f.node(570, 40, 140, 54, "Pizza is the best", "u2 · another user", "warnbox")
+    c1 = f.node(570, 40, 140, 54, "Pizza is the best", "u2 · another user", "off")
     a2 = f.node(20, 196, 150, 54, "Menu: margherita", "u1 · doc_id=menu.pdf")
     b2 = f.node(290, 196, 152, 54, "Menu prices changed", "u1 · doc_id=menu.pdf")
     f.arrow(a1.at("r", 0.72), b1.at("l", 0.72), label="REPLY_TO 1.0\nTEMPORAL_NEXT 0.6", at=(230, 52))
-    f.arrow(c1.at("l", 0.72), b1.at("r", 0.72), kind="warn", label="TOPIC_SIMILAR 0.88\ncrosses users", at=(506, 52))
+    f.arrow(c1.at("l", 0.72), b1.at("r", 0.72), kind="dash", head=False, label="no link:\nanother user", at=(506, 52))
     f.arrow(b2.at("l", 0.72), a2.at("r", 0.72), label="DOCUMENT_LINK 0.8\nsame doc_id", at=(230, 208))
     f.arrow(a2.t, a1.b, label="TOPIC_SIMILAR 0.79", at=(108, 150), anchor="start")
     f.text(500, 214, "Edges point from the newer memory", "lbl", "start")
@@ -1147,6 +1147,11 @@ def cgl_graph() -> str:
     if crossing:
         note = (f" The highlighted link joins another user's memory to {you}'s: topic links are not limited to one "
                 f"user, which is why the <a href=\"#how-search-ranks\">scoping warning</a> below matters.")
+    else:
+        stranger = next((n for n in run["nodes"] if n["user_id"] != you), None)
+        if stranger:
+            note = (f" “{escape(stranger['text'])}” belongs to {escape(stranger['user_id'])}: links only join memories "
+                    f"of the same user, so it has none to {escape(you)}'s, however close the topic.")
     return (
         f'<figure class="diagram" id="fig-cgl-graph"><div class="dg-scroll">{graph_svg(run, "cgl-graph", "all", aria)}</div>'
         f"<figcaption>Each dot is a memory and each line a link the library made when the memory was added; a "
@@ -1180,6 +1185,11 @@ def cgl_walk() -> str:
     if others:
         step2 += (f" Links are not limited to one user, so {q(others[0]['key'])}, which belongs to "
                   f"{escape(others[0]['user_id'])}, is reached too.")
+    else:
+        stranger = next((n for n in run["nodes"] if n["user_id"] != you), None)
+        if stranger:
+            step2 += (f" No link leads to another user's memory, so {q(stranger['key'])}, which belongs to "
+                      f"{escape(stranger['user_id'])}, is never reached.")
     results = run["results"]
     dropped = [x["key"] for x in seeds if x["key"] not in results]
     foreign = [k for k in results if _owner(run, k) != you]

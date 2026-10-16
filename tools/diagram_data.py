@@ -10,7 +10,7 @@ Run it in an environment with the release the site documents, networkx and
 sentence-transformers, from outside a checkout of the library (-I keeps
 Python from importing a local copy):
 
-    pip install "outhad-contextkitai==0.1.3" networkx sentence-transformers
+    pip install "outhad-contextkitai==0.1.4" networkx sentence-transformers
     python -I tools/diagram_data.py content/data/context-graph.json
 
 Re-run it for each library release and commit the JSON.
