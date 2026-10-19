@@ -1,391 +1,300 @@
 {% extends "base.html" %}
 {% block title %}ContextKit: long-term memory for AI agents{% endblock %}
+{% block body_class %}home{% endblock %}
 {% macro soon(slug) %}{% if access.get(slug) == "team" %}<span class="soon">on request</span>{% elif unreleased.get(slug) %}<span class="soon">next release</span>{% endif %}{% endmacro %}
 {% block main %}
       <main>
-        <section class="hero">
-          <h1>Long-term memory for AI agents.<br /><span>In one Python library.</span></h1>
-          <p class="lead">
-            ContextKit turns conversations into facts, keeps them per user, and hands your agent only the few that matter
-            for each request. Bring your own model and vector store.
-          </p>
-          <div class="install">
-            <code id="cmd">{{ library.install }}</code>
-            <button id="copy" type="button">Copy</button>
+        <section class="hero" id="hero">
+          <div class="hero-title">
+            <p class="eyebrow">Long-term memory for AI agents</p>
+            <h1>Remember what matters. <span class="fade">Forget the rest.</span></h1>
           </div>
-          <p class="meta">
-            <a data-pypi="{{ library.dist }}" href="/changelog/">Latest: v{{ library.version }}</a> · Python 3.9+ ·
-            {{ site.license }}
-          </p>
-          <p class="hint">
-            {% if site.cloud_open %}
-            Rather not run it yourself? <a href="{{ site.cloud_app }}">Sign up for the hosted cloud</a> and use the same
-            engine over HTTP with the <a href="/docs/cloud/">cloud SDK</a>.
-            {% else %}
-            A hosted cloud with a thin <a href="/docs/cloud/">Python SDK</a> is on the way; the library is the way to run it
-            today.
-            {% endif %}
-          </p>
-
-          <div class="terminal" aria-label="An agent that remembers a user's diet across sessions with ContextKit">
-            <div class="titlebar">
-              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-              <span class="title">support agent — memory for alice</span>
+          <div>
+            <p class="lead">
+              ContextKit turns conversations into facts, keeps them per user, and hands your agent only the few that
+              matter for each request. One Python library. Bring your own model and vector store.
+            </p>
+            <div class="install">
+              <code id="cmd">{{ library.install }}</code>
+              <button class="btn" id="copy" type="button">Copy</button>
             </div>
-            <div class="screen">
-              <div class="chat"><span class="you">I'm vegetarian, and I'm allergic to peanuts.</span>
-<span class="ok">✓</span> memory.add  <span class="m">2 facts · ADD · ADD</span>
-
-<span class="you">I've started eating fish again, by the way.</span>
-<span class="ok">✓</span> memory.add  <span class="m">1 fact · UPDATE "Is vegetarian"</span>
-
-<span class="m">· · ·  three weeks later, a new session  · · ·</span>
-
-<span class="you">Any idea what I could cook tonight?</span>
-<span class="ok">✓</span> memory.search  <span class="m">3 memories · graph-first</span>
-
-Grilled salmon with lemon and herbs, over a quick quinoa salad. I've left out satay sauce and peanut oil because of your allergy.
-
-<span class="ac">▣</span> Agent <span class="m">· 3 memories in context, not 3 weeks of chat</span>
-<span class="prompt"><span class="m">Message the agent…</span></span></div>
-              <div class="side">
-                <div class="sidehead">
-                  <span><strong>Memory</strong> <span class="ok">●</span> alice <span class="m">· user_id</span></span>
-                  <span class="m">search</span>
-                </div>
-                <div class="store" aria-hidden="true">
-                  <div class="q"><span class="m">query</span> Any idea what I could cook tonight?</div>
-                  <ol>
-                    <li><span class="score">0.82</span><span>Allergic to peanuts</span><span class="why">seed · closest match</span></li>
-                    <li><span class="score">0.79</span><span>Eats fish, no other meat</span><span class="why">seed · updated from “Is vegetarian”</span></li>
-                    <li><span class="score">0.61</span><span>Cooks quick weeknight dinners</span><span class="why">via <span class="lk">TOPIC_SIMILAR</span> · from a March chat</span></li>
-                  </ol>
-                </div>
-                <div class="edges" aria-hidden="true"><span>REPLY_TO</span><span>TEMPORAL_NEXT</span><span>TOPIC_SIMILAR</span></div>
-                <div class="m"><span class="ok">✓</span> seed 2 → expand 1 hop → re-rank</div>
-              </div>
-            </div>
+            <p class="meta">
+              <a class="u" data-pypi="{{ library.dist }}" data-prefix="v" href="/changelog/">v{{ library.version }}</a><span class="sep">·</span>
+              <span>Python 3.9+</span><span class="sep">·</span>
+              <span>{{ site.license }}</span><span class="sep">·</span>
+              <a class="u" href="/docs/quickstart/">Quickstart →</a>
+            </p>
+            <p class="hint">
+              {% if site.cloud_open %}
+              Rather not run it yourself? <a href="{{ site.cloud_app }}">Sign up for the hosted cloud</a> and use the same
+              engine over HTTP with the <a href="/docs/cloud/">cloud SDK</a>.
+              {% else %}
+              A hosted cloud with a thin <a href="/docs/cloud/">Python SDK</a> is on the way. The library is the way to run
+              it today.
+              {% endif %}
+            </p>
           </div>
+
+          <figure class="distill" aria-label="Nine messages from alice over five weeks. ContextKit keeps three facts: allergic to peanuts, eats fish but no other meat, and cooks quick weeknight dinners.">
+            <figcaption class="d-head"><span>conversation · <span class="scope">user_id = alice</span></span><span>9 messages</span></figcaption>
+            <ol class="transcript">
+              <li style="--i: 0"><time>Mar 02</time><span class="who">alice</span><p>Hi! Can you help me plan meals this week?</p></li>
+              <li style="--i: 1"><time>Mar 02</time><span class="who">agent</span><p>Happy to. Anything I should know first?</p></li>
+              <li style="--i: 2"><time>Mar 02</time><span class="who">alice</span><p>I'm <mark style="--m: 0">vegetarian</mark>, and I'm <mark style="--m: 1">allergic to peanuts</mark>.</p></li>
+              <li style="--i: 3"><time>Mar 02</time><span class="who">alice</span><p>Weeknights I've got <mark style="--m: 2">maybe 20 minutes to cook</mark>.</p></li>
+              <li style="--i: 4"><time>Mar 02</time><span class="who">agent</span><p>Got it. Here are five quick dinners to start.</p></li>
+              <li style="--i: 5"><time>Mar 19</time><span class="who">alice</span><p>That lentil one was great, thanks.</p></li>
+              <li style="--i: 6"><time>Apr 07</time><span class="who">alice</span><p>I've <mark style="--m: 3">started eating fish again</mark>, by the way.</p></li>
+              <li style="--i: 7"><time>Apr 07</time><span class="who">agent</span><p>Noted. Want a few fish dishes added?</p></li>
+              <li style="--i: 8"><time>Apr 07</time><span class="who">alice</span><p>Sure, nothing too fancy.</p></li>
+            </ol>
+            <div class="kept-head"><span>kept in memory</span><span>3 facts</span></div>
+            <ul class="kept">
+              <li style="--k: 0"><span class="fact">Allergic to peanuts</span><span class="ev">ADD</span></li>
+              <li style="--k: 1"><span class="fact">Eats fish, no other meat</span><span class="ev">UPDATE</span><span class="was">was <s>Is vegetarian</s></span></li>
+              <li style="--k: 2"><span class="fact">Cooks quick weeknight dinners</span><span class="ev">ADD</span></li>
+            </ul>
+            <div class="d-foot">
+              <span>Next prompt carries 3 facts, not the chat.</span>
+              <button class="ghost" id="replay" type="button">Replay</button>
+            </div>
+          </figure>
         </section>
 
-        <section class="about">
-          <p class="eyebrow">This is ContextKit<span>→</span></p>
-          <p class="statement">
-            <strong>A memory layer for AI agents.</strong> Instead of resending the whole conversation every turn, your agent
-            stores facts once and pulls back <strong>only the handful that matter</strong> for the request in front of it.
-          </p>
-        </section>
-
-        <section class="block" id="how-it-works">
-          <h2>How it works</h2>
-          <p class="lead">
-            Two calls do most of the work: <code>add</code> when something is said, and <code>search</code> before your agent
-            answers. Everything else is an option on one of them.
-          </p>
-          <div class="flows">
-            <div class="flow" role="img" aria-label="Writing: messages go to the LLM, which extracts facts, compares them with what is already stored, and decides to add, update, or delete; the result goes to the vector store and the history">
-              <span class="label">add</span>
-              <span class="node">messages</span><span class="arrow">→</span>
-              <span class="node ai">extract facts</span><span class="arrow">→</span>
-              <span class="node check">compare with stored</span><span class="arrow">→</span>
-              <span class="node ai">ADD · UPDATE · DELETE</span><span class="arrow">→</span>
-              <span class="node out">store + history</span>
-            </div>
-            <div class="flow" role="img" aria-label="Reading: the query is embedded, searched within one user's memories, optionally expanded through the graph and re-ranked, and the top memories go into your prompt">
-              <span class="label">search</span>
-              <span class="node">query</span><span class="arrow">→</span>
-              <span class="node check">search in scope</span><span class="arrow">→</span>
-              <span class="node">expand links · optional</span><span class="arrow">→</span>
-              <span class="node ai">re-rank · optional</span><span class="arrow">→</span>
-              <span class="node out">top memories → prompt</span>
-            </div>
+        <section class="sec" id="how-it-works">
+          <div class="sec-head">
+            <p class="eyebrow">How it works</p>
+            <h2>The life of a memory</h2>
+            <p>
+              Two calls do most of the work: <code>add</code> when something is said, and <code>search</code> before your
+              agent answers. Everything else is an option on one of them.
+            </p>
           </div>
-          <div class="grid">
-            <div class="card">
-              <h3>Facts, not transcripts</h3>
-              <p>
-                The LLM keeps “Allergic to peanuts”, not the five messages it came from. When a fact changes, the old
-                memory is updated instead of contradicted. Pass <code>infer=False</code> to store text as-is.
-              </p>
-            </div>
-            <div class="card">
-              <h3>Scoped by default</h3>
-              <p>
-                Every memory belongs to a <code>user_id</code>, <code>agent_id</code>, or <code>run_id</code>, and every search
-                stays inside one. Add your own metadata and filter on it too.
-              </p>
-            </div>
-            <div class="card">
-              <h3>Every change on record</h3>
-              <p>
-                Each add, update, and delete writes a history row with the old and new text, so
-                <code>history(memory_id)</code> shows how a fact changed and when.
-              </p>
-            </div>
-          </div>
-        </section>
 
-        <section class="block" id="kinds-of-memory">
-          <h2>Kinds of memory</h2>
-          <p class="lead">
-            An agent needs to remember different things for different lengths of time. Each kind below is a scope or a
-            feature of the same library, so you can mix them in one store.
-          </p>
-          <div class="grid four">
-            <div class="card">
-              <p class="tag">long-term · facts</p>
-              <h3>User memory</h3>
-              <p>Preferences, constraints, and history about a person that should outlive any one conversation.</p>
-              <p class="api">via <code>user_id</code></p>
-              <p class="eg">“Allergic to peanuts”</p>
-            </div>
-            <div class="card">
-              <p class="tag">short-term · working</p>
-              <h3>Session memory</h3>
-              <p>What matters for one task, ticket, or run, and nothing else. Clear it when the job is done.</p>
-              <p class="api">via <code>run_id</code></p>
-              <p class="eg">“Wants the refund on the original card”</p>
-            </div>
-            <div class="card">
-              <p class="tag">shared</p>
-              <h3>Agent memory</h3>
-              <p>What one agent learned across the people it serves, or what several agents share on one job.</p>
-              <p class="api">via <code>agent_id</code></p>
-              <p class="eg">“Login builds SQL by concatenation”</p>
-            </div>
-            <div class="card">
-              <p class="tag">how-to</p>
-              <h3>Procedural memory</h3>
-              <p>How the agent got something done, summarised from its own steps, so the next run goes faster.</p>
-              <p class="api">via <code>memory_type</code></p>
-              <p class="eg">“Search → refundable only → hold seat”</p>
-            </div>
-            <div class="card">
-              <p class="tag">events · timeline</p>
-              <h3>Episodic memory{{ soon("episodic-memory") }}</h3>
-              <p>What happened, when, and what led to what: dated events with cause → effect links.</p>
-              <p class="api">via <code>build_timeline</code></p>
-              <p class="eg">“Cache shipped Mon → timeouts Tue”</p>
-            </div>
-            <div class="card">
-              <p class="tag">entities · graph</p>
-              <h3>Relational memory</h3>
-              <p>People, products, and services and how they connect, kept in Neo4j, Memgraph, or Neptune.</p>
-              <p class="api">via <code>graph_store</code></p>
-              <p class="eg">alice → works_at → acme</p>
-            </div>
-            <div class="card">
-              <p class="tag">reference</p>
-              <h3>Document memory</h3>
-              <p>Handbooks, transcripts, and logs stored as written, split into chunks, rejoined when found.</p>
-              <p class="api">via <code>infer=False</code></p>
-              <p class="eg">“Refunds within 30 days of delivery…”</p>
-            </div>
-            <div class="card">
-              <p class="tag">images</p>
-              <h3>Visual memory</h3>
-              <p>Screenshots, photos, and designs, described by a vision model and kept as searchable facts.</p>
-              <p class="api">via <code>enable_vision</code></p>
-              <p class="eg">“Spring packaging is sage green”</p>
-            </div>
-          </div>
-          <p class="more"><a href="/docs/scoping/">How scoping works →</a> · <a href="/docs/memory-operations/">Every memory operation →</a></p>
-        </section>
-
-        <section class="block" id="layers">
-          <h2>Layers you turn on when you need them</h2>
-          <p class="lead">
-            The core needs an LLM and a vector store. Every layer below is off until you enable it, and off means no change
-            in behaviour, so you can start small and add one at a time.
-          </p>
-          <div class="stack">
-            <p class="group">Core · always on</p>
-            <div class="layer">
-              <h3>Memory engine</h3>
-              <div>
-                <p>Fact extraction, add / update / delete decisions, scoped vector search, metadata filters, and a history row for every change.</p>
-                <p class="use"><strong>Needs</strong> an LLM, an embedder, and a vector store. Qdrant on local disk works with no servers.</p>
+          <ol class="chapters">
+            <li class="ch" style="--life: 1">
+              <div class="ch-text">
+                <span class="ch-n mono">01</span>
+                <h3>Remember</h3>
+                <p>
+                  An LLM reads what was said and keeps the facts in it. Each one is compared with what is already
+                  stored, then added, merged into an existing memory, or left out.
+                </p>
+                <code class="call">memory.add(messages, user_id=<span class="s">"alice"</span>)</code>
+                <p class="ch-note">Pass <code>infer=False</code> to store text exactly as written.</p>
               </div>
-              <p class="on"><code>Memory.from_config({...})</code><a href="/docs/quickstart/">Quickstart →</a></p>
-            </div>
-
-            <p class="group">Retrieval · what comes back</p>
-            <div class="layer">
-              <h3>Graph memory{{ soon("graph-memory") }}</h3>
-              <div>
-                <p>Entities and relations in a graph database, stamped with when they were recorded and searched together with the vectors.</p>
-                <p class="use"><strong>Use it for</strong> questions about who and what is connected: people, accounts, products, services.</p>
+              <div class="panel">
+                <p class="p-label">alice · Mar 02</p>
+                <p class="said">“I'm vegetarian, and I'm allergic to peanuts.”</p>
+                <ul class="diff">
+                  <li><span class="sign">+</span><span class="fact">Is vegetarian</span><span class="ev">ADD</span></li>
+                  <li><span class="sign">+</span><span class="fact">Allergic to peanuts</span><span class="ev">ADD</span></li>
+                </ul>
               </div>
-              <p class="on"><code>"graph_store"</code><a href="/docs/graph-memory/">Guide →</a></p>
-            </div>
-            <div class="layer">
-              <h3>Episodic memory{{ soon("episodic-memory") }}</h3>
-              <div>
-                <p>Dated events and the cause → effect links between them, kept on top of graph memory, so your agent can answer when and why.</p>
-                <p class="use"><strong>Use it for</strong> incidents, case histories, and projects: “why did checkout start timing out?”</p>
-              </div>
-              <p class="on"><code>"tcmgm"</code><a href="/docs/episodic-memory/">Guide →</a></p>
-            </div>
-            <div class="layer">
-              <h3>Context graph{{ soon("context-graph") }}</h3>
-              <div>
-                <p>Links memories to each other (replies, timeline order, shared documents, similar topics) and searches through the links, so the context around a match comes back with it.</p>
-                <p class="use"><strong>Use it for</strong> long conversations where one fact only makes sense next to its neighbours.</p>
-              </div>
-              <p class="on"><code>"context_graph"</code><a href="/docs/context-graph/">Guide →</a></p>
-            </div>
-            <div class="layer">
-              <h3>Personalized retrieval{{ soon("personalized-retrieval") }}</h3>
-              <div>
-                <p>Feedback, usage, answers that worked before, and the kind of question each add a weighted signal to the ranking. Every weight starts at zero.</p>
-                <p class="use"><strong>Use it for</strong> assistants that should get better the more they are used.</p>
-              </div>
-              <p class="on"><code>"mspr"</code><a href="/docs/personalized-retrieval/">Guide →</a></p>
-            </div>
-
-            <p class="group">Governance · what is kept, and for whom</p>
-            <div class="layer">
-              <h3>Tenants{{ soon("tenants") }}</h3>
-              <div>
-                <p>A registry of customer organisations, their departments or projects, and who holds which role, with export, import, and migration of a tenant's records.</p>
-                <p class="use"><strong>Use it for</strong> products that serve many companies from one store.</p>
-              </div>
-              <p class="on"><code>"tenant"</code><a href="/docs/tenants/">Guide →</a></p>
-            </div>
-            <div class="layer">
-              <h3>Decay and versioning{{ soon("decay-and-versioning") }}</h3>
-              <div>
-                <p>Scores each memory by how recently and how often it was used and whether it helped, archives the stale ones, and moves them to disk or S3 until they are needed.</p>
-                <p class="use"><strong>Use it for</strong> stores that live for months and keep growing.</p>
-              </div>
-              <p class="on"><code>"decay_v2"</code><a href="/docs/decay-and-versioning/">Guide →</a></p>
-            </div>
-            <div class="layer">
-              <h3>Privacy{{ soon("privacy") }}</h3>
-              <div>
-                <p>Finds emails, phone numbers, API keys, and anything you write a rule for; redacts them before you store; encrypts values with AES-256-GCM or Fernet.</p>
-                <p class="use"><strong>Use it for</strong> anything that touches personal or regulated data.</p>
-              </div>
-              <p class="on"><code>memory.privacy</code><a href="/docs/privacy/">Guide →</a></p>
-            </div>
-
-            <p class="group">Ingest · what goes in</p>
-            <div class="layer">
-              <h3>Chunking{{ soon("chunking") }}</h3>
-              <div>
-                <p>Splits long texts into overlapping chunks and merges neighbours back at search time. Short texts stay whole.</p>
-                <p class="use"><strong>Use it for</strong> keeping documents next to conversation memory.</p>
-              </div>
-              <p class="on"><code>"chunking"</code><a href="/docs/chunking/">Guide →</a></p>
-            </div>
-            <div class="layer">
-              <h3>Multimodal{{ soon("multimodal") }}</h3>
-              <div>
-                <p>A vision model describes each image, and the description is remembered like any other message.</p>
-                <p class="use"><strong>Use it for</strong> screenshots, receipts, and product photos.</p>
-              </div>
-              <p class="on"><code>"enable_vision"</code><a href="/docs/multimodal/">Guide →</a></p>
-            </div>
-          </div>
-        </section>
-
-        <section class="block" id="where-it-fits">
-          <h2>Where it fits</h2>
-          <p class="lead">
-            Most products use a few kinds of memory and a layer or two. These are common combinations of <span class="pill k">kinds of memory</span> and <span class="pill l">layers</span>.
-          </p>
-          <div class="grid">
-            <div class="card">
-              <h3>Support agents</h3>
-              <p>
-                Remember each customer's products, past tickets, and preferences, so nobody explains twice. Answers marked
-                helpful rank higher next time.
-              </p>
-              <div class="tags"><span class="k">user</span><span class="k">session</span><span class="k">document</span><span class="l">personalized retrieval</span></div>
-            </div>
-            <div class="card">
-              <h3>Personal assistants</h3>
-              <p>
-                Keep up with tastes and routines that change over months. Old facts are updated rather than contradicted,
-                and the ones nobody uses fade.
-              </p>
-              <div class="tags"><span class="k">user</span><span class="k">procedural</span><span class="k">visual</span><span class="l">decay</span></div>
-            </div>
-            <div class="card">
-              <h3>Coding and DevOps agents</h3>
-              <p>
-                Answer “what changed before it broke?” from deploys, incidents, and fixes over time, with the runbooks
-                close at hand.
-              </p>
-              <div class="tags"><span class="k">episodic</span><span class="k">relational</span><span class="k">document</span><span class="l">graph memory</span></div>
-            </div>
-            <div class="card">
-              <h3>Multi-agent systems</h3>
-              <p>
-                A researcher, a planner, and an executor share findings on one job through a common run, and each keeps
-                its own lessons for the next one.
-              </p>
-              <div class="tags"><span class="k">agent</span><span class="k">session</span><span class="k">procedural</span><span class="l">context graph</span></div>
-            </div>
-            <div class="card">
-              <h3>Software for many companies</h3>
-              <p>
-                Give every customer organisation its own memory, with departments, roles, and exports, from a single
-                store.
-              </p>
-              <div class="tags"><span class="l">tenants</span><span class="k">user</span><span class="l">privacy</span><span class="l">decay</span></div>
-            </div>
-            <div class="card">
-              <h3>Health, finance, and legal</h3>
-              <p>
-                Redact what must not be stored, keep a record of every change, and delete a person's memories when
-                they ask.
-              </p>
-              <div class="tags"><span class="l">privacy</span><span class="k">change history</span><span class="l">tenants</span><span class="k">user</span></div>
-            </div>
-          </div>
-        </section>
-
-        <section class="block" id="providers">
-          <h2>Your models, your store</h2>
-          <p class="lead">Configured with one dictionary. Swap any part without touching the rest of your code.</p>
-          <div class="providers">
-            <div>
-              <h3>15 LLMs</h3>
-              <p>OpenAI, Anthropic, Gemini, Azure OpenAI, AWS Bedrock, Groq, Together, DeepSeek, xAI, Ollama, LM Studio, vLLM, LiteLLM, and more</p>
-            </div>
-            <div>
-              <h3>10 embedders</h3>
-              <p>OpenAI, Azure OpenAI, Gemini, Vertex AI, Hugging Face, Ollama, Together, LM Studio, AWS Bedrock, LangChain</p>
-            </div>
-            <div>
-              <h3>16 vector stores</h3>
-              <p>Qdrant, pgvector, Chroma, Pinecone, Weaviate, Milvus, MongoDB, Redis, Elasticsearch, OpenSearch, FAISS, Supabase, and more</p>
-            </div>
-            <div>
-              <h3>3 graph stores</h3>
-              <p>Neo4j, Memgraph, and AWS Neptune, for graph memory and the context graph's Neo4j backend</p>
-            </div>
-          </div>
-          <p class="more"><a href="/docs/providers/">All providers and their settings →</a> · <a href="/docs/providers/#run-everything-locally">Run everything locally with Ollama →</a></p>
-        </section>
-
-        <section class="start">
-          <h2>Get started</h2>
-          <ol class="steps">
-            <li><span><strong>Install</strong> with the command above. Python 3.9 or newer.</span></li>
-            <li>
-              <span><strong>Set a model key</strong>: <code>export OPENAI_API_KEY=sk-…</code>. OpenAI is the default;
-                Anthropic, Gemini, Groq, Ollama, and others are a config change away.</span>
             </li>
-            <li><span><strong>Store what the user says</strong> with <code>memory.add(messages, user_id="alice")</code>.</span></li>
-            <li>
-              <span><strong>Search before each reply</strong> with <code>memory.search(query, user_id="alice")</code>, and put
-                the results in your prompt.</span>
+
+            <li class="ch" style="--life: 0.8">
+              <div class="ch-text">
+                <span class="ch-n mono">02</span>
+                <h3>Revise</h3>
+                <p>
+                  When a fact changes, the memory is updated instead of contradicted. The old text is kept on record, so
+                  you can see how a fact changed and when.
+                </p>
+                <code class="call">memory.history(memory_id)</code>
+              </div>
+              <div class="panel">
+                <p class="p-label">alice · Apr 07</p>
+                <p class="said">“I've started eating fish again, by the way.”</p>
+                <ul class="diff">
+                  <li class="old"><span class="sign">−</span><span class="fact">Is vegetarian</span><span></span></li>
+                  <li><span class="sign">+</span><span class="fact">Eats fish, no other meat</span><span class="ev">UPDATE</span></li>
+                </ul>
+                <div class="hist">
+                  <span class="cap">history(memory_id)</span>
+                  <span>Mar 02</span><span>ADD</span><span>Is vegetarian</span>
+                  <span>Apr 07</span><span>UPDATE</span><span>Is vegetarian <span class="arrow">→</span> Eats fish, no other meat</span>
+                </div>
+              </div>
+            </li>
+
+            <li class="ch" style="--life: 0.55">
+              <div class="ch-text">
+                <span class="ch-n mono">03</span>
+                <h3>Recall</h3>
+                <p>
+                  Before each reply, search one person's memories and put the best few in the prompt. Searches never
+                  leave the scope you give them.
+                </p>
+                <code class="call">memory.search(query, user_id=<span class="s">"alice"</span>, limit=3)</code>
+                <p class="ch-note">Turn on the <a class="u" href="/docs/context-graph/">context graph</a> and the memories linked to a match come back with it.</p>
+              </div>
+              <div class="panel">
+                <div class="query"><span class="p-label">alice · Apr 28</span><span class="pill">user_id = alice</span></div>
+                <p class="said">“Any idea what I could cook tonight?”</p>
+                <ol class="hits">
+                  <li style="--s: 0.82"><span class="score">0.82</span><span class="fact">Allergic to peanuts</span><span class="bar"><i></i></span></li>
+                  <li style="--s: 0.79"><span class="score">0.79</span><span class="fact">Eats fish, no other meat</span><span class="bar"><i></i></span></li>
+                  <li style="--s: 0.61"><span class="score">0.61</span><span class="fact">Cooks quick weeknight dinners</span><span class="bar"><i></i></span></li>
+                </ol>
+                <div class="answer">
+                  <p class="p-label">agent, with 3 memories in the prompt</p>
+                  <p>Grilled salmon with lemon over a quick quinoa salad. I've left out satay sauce and peanut oil because of your allergy.</p>
+                </div>
+              </div>
+            </li>
+
+            <li class="ch" style="--life: 0.3">
+              <div class="ch-text">
+                <span class="ch-n mono">04</span>
+                <h3>Forget</h3>
+                <p>
+                  Memories nobody uses fade. With decay on, each memory gets a score from 0 to 1 for how recently and how
+                  often it was used and whether it helped. The lowest are archived to disk or S3 until they are needed
+                  again.
+                </p>
+                <code class="call">memory.archive_low(threshold=0.1)</code>
+                <p class="ch-note">
+                  When someone asks to be forgotten, <code>memory.delete_all(user_id="alice")</code> removes their memories.
+                  <a class="u" href="/docs/decay-and-versioning/">Decay</a> is an opt-in layer.
+                </p>
+              </div>
+              <div class="panel">
+                <p class="formula">score = 0.6 × recency + 0.3 × use + 0.1 × feedback</p>
+                <svg class="curve" viewBox="0 0 300 108" role="img" aria-label="Recency halves every 30 days: one half at 30 days, one quarter at 60, one eighth at 90.">
+                  <path class="axis" d="M30 8 V82 H290"></path>
+                  <path class="guide" d="M95 82 V47 H30 M160 82 V64.5 H30 M225 82 V73.2 H30"></path>
+                  <path class="line" d="M30.0 12.0 L36.5 16.7 L43.0 21.1 L49.5 25.1 L56.0 28.9 L62.5 32.5 L69.0 35.8 L75.5 38.9 L82.0 41.8 L88.5 44.5 L95.0 47.0 L101.5 49.3 L108.0 51.5 L114.5 53.6 L121.0 55.5 L127.5 57.3 L134.0 58.9 L140.5 60.5 L147.0 61.9 L153.5 63.2 L160.0 64.5 L166.5 65.7 L173.0 66.8 L179.5 67.8 L186.0 68.7 L192.5 69.6 L199.0 70.5 L205.5 71.2 L212.0 71.9 L218.5 72.6 L225.0 73.2 L231.5 73.8 L238.0 74.4 L244.5 74.9 L251.0 75.4 L257.5 75.8 L264.0 76.2 L270.5 76.6 L277.0 77.0 L283.5 77.3 L290.0 77.6"></path>
+                  <circle class="dot" cx="30" cy="12" r="2.5"></circle>
+                  <circle class="dot" cx="95" cy="47" r="2.5"></circle>
+                  <circle class="dot" cx="160" cy="64.5" r="2.5"></circle>
+                  <circle class="dot" cx="225" cy="73.2" r="2.5"></circle>
+                  <text x="24" y="15" text-anchor="end">1</text>
+                  <text x="24" y="50" text-anchor="end">½</text>
+                  <text x="24" y="85" text-anchor="end">0</text>
+                  <text x="30" y="96" text-anchor="middle">0</text>
+                  <text x="95" y="96" text-anchor="middle">30</text>
+                  <text x="160" y="96" text-anchor="middle">60</text>
+                  <text x="225" y="96" text-anchor="middle">90</text>
+                  <text x="290" y="96" text-anchor="end">120 days</text>
+                  <text x="102" y="42">recency halves every 30 days</text>
+                </svg>
+                <ul class="decay">
+                  <li style="--s: 0.94"><span class="fact">Allergic to peanuts</span><span class="score">0.94</span><span class="why">used 3 days ago · 12 uses · 2 helpful</span></li>
+                  <li style="--s: 0.45"><span class="fact">Cooks quick weeknight dinners</span><span class="score">0.45</span><span class="why">used 40 days ago · 3 uses</span></li>
+                  <li class="gone" style="--s: 0.06"><span class="fact">Training for a 10k in May</span><span class="score">0.06</span><span class="why">last touched 200 days ago · never used<span class="tag">ARCHIVED</span></span></li>
+                </ul>
+              </div>
             </li>
           </ol>
-          <pre class="hl"><code>{{ quickstart | python }}</code></pre>
-          <p class="more"><a href="/docs/quickstart/">Read the quickstart →</a> · <a href="/docs/">Browse the docs →</a></p>
+        </section>
+
+        <section class="sec" id="kinds-of-memory">
+          <div class="sec-head">
+            <p class="eyebrow">Kinds of memory</p>
+            <h2>An agent remembers different things for different lengths of time</h2>
+            <p>Each kind is a scope or a feature of the same library, so you can mix them in one store.</p>
+          </div>
+          <div class="kinds">
+            <article class="mkind"><h3>User memory <span class="span">long-term</span></h3><p>Preferences, constraints, and history about a person that should outlive any one conversation.</p><div class="eg"><code>user_id</code><q><span>Allergic to peanuts</span></q></div></article>
+            <article class="mkind"><h3>Session memory <span class="span">one task</span></h3><p>What matters for one ticket or run, and nothing else. Clear it when the job is done.</p><div class="eg"><code>run_id</code><q><span>Wants the refund on the original card</span></q></div></article>
+            <article class="mkind"><h3>Agent memory <span class="span">shared</span></h3><p>What one agent learned across the people it serves, or what several agents share on one job.</p><div class="eg"><code>agent_id</code><q><span>Login builds SQL by concatenation</span></q></div></article>
+            <article class="mkind"><h3>Procedural memory <span class="span">how-to</span></h3><p>How the agent got something done, summarised from its own steps, so the next run goes faster.</p><div class="eg"><code>memory_type</code><q><span>Search → refundable only → hold seat</span></q></div></article>
+            <article class="mkind"><h3>Episodic memory <span class="span">events</span>{{ soon("episodic-memory") }}</h3><p>What happened, when, and what led to what: dated events with cause and effect links.</p><div class="eg"><code>build_timeline</code><q><span>Cache shipped Mon → timeouts Tue</span></q></div></article>
+            <article class="mkind"><h3>Relational memory <span class="span">entities</span></h3><p>People, products, and services and how they connect, kept in Neo4j, Memgraph, or Neptune.</p><div class="eg"><code>graph_store</code><q><span>alice → works_at → acme</span></q></div></article>
+            <article class="mkind"><h3>Document memory <span class="span">reference</span></h3><p>Handbooks, transcripts, and logs stored as written, split into chunks, rejoined when found.</p><div class="eg"><code>infer=False</code><q><span>Refunds within 30 days of delivery</span></q></div></article>
+            <article class="mkind"><h3>Visual memory <span class="span">images</span></h3><p>Screenshots, photos, and designs, described by a vision model and kept as searchable facts.</p><div class="eg"><code>enable_vision</code><q><span>Spring packaging is sage green</span></q></div></article>
+          </div>
+          <p class="more"><a class="u" href="/docs/scoping/">How scoping works →</a><a class="u" href="/docs/memory-operations/">Every memory operation →</a></p>
+        </section>
+
+        <section class="sec" id="layers">
+          <div class="sec-head">
+            <p class="eyebrow">Layers</p>
+            <h2>Off is a commented-out line</h2>
+            <p>
+              The core needs an LLM and a vector store. Every layer below is one key in the config and stays off until you
+              add it, with no change in behaviour while it is off. Try the switches.
+            </p>
+          </div>
+          <div class="layers">
+            <div>
+              <div class="lgroup">
+                <p class="eyebrow">Core</p>
+                <div class="lrow"><h3>Memory engine</h3><span class="always">always on</span><p>Fact extraction, add, update, and delete decisions, scoped search, metadata filters, and a history row for every change.</p><div class="lk"><code>vector_store</code><a class="u" href="/docs/quickstart/">Quickstart →</a></div></div>
+              </div>
+              <div class="lgroup">
+                <p class="eyebrow">Retrieval · what comes back</p>
+                <div class="lrow"><h3>Graph memory{{ soon("graph-memory") }}</h3><button class="switch" type="button" role="switch" aria-checked="false" id="sw-graph" aria-label="Graph memory"></button><p>Entities and relations in a graph database, searched together with the vectors.</p><div class="lk"><code>graph_store</code><a class="u" href="/docs/graph-memory/">Guide →</a></div></div>
+                <div class="lrow"><h3>Episodic memory{{ soon("episodic-memory") }}</h3><button class="switch" type="button" role="switch" aria-checked="false" id="sw-tcmgm" aria-label="Episodic memory"></button><p>Dated events and the cause and effect links between them, so your agent can answer when and why.</p><div class="lk"><code>tcmgm</code><a class="u" href="/docs/episodic-memory/">Guide →</a></div></div>
+                <div class="lrow"><h3>Context graph{{ soon("context-graph") }}</h3><button class="switch" type="button" role="switch" aria-checked="false" id="sw-cgl" aria-label="Context graph"></button><p>Links memories to each other and searches through the links, so the context around a match comes back with it.</p><div class="lk"><code>context_graph</code><a class="u" href="/docs/context-graph/">Guide →</a></div></div>
+                <div class="lrow"><h3>Personalized retrieval{{ soon("personalized-retrieval") }}</h3><button class="switch" type="button" role="switch" aria-checked="false" id="sw-mspr" aria-label="Personalized retrieval"></button><p>Feedback, usage, and answers that worked before each add a weighted signal to the ranking.</p><div class="lk"><code>mspr</code><a class="u" href="/docs/personalized-retrieval/">Guide →</a></div></div>
+              </div>
+              <div class="lgroup">
+                <p class="eyebrow">Governance · what is kept, and for whom</p>
+                <div class="lrow"><h3>Tenants{{ soon("tenants") }}</h3><button class="switch" type="button" role="switch" aria-checked="false" id="sw-tenant" aria-label="Tenants"></button><p>Customer organisations, their departments, and who holds which role, with export and migration.</p><div class="lk"><code>tenant</code><a class="u" href="/docs/tenants/">Guide →</a></div></div>
+                <div class="lrow"><h3>Decay and versioning{{ soon("decay-and-versioning") }}</h3><button class="switch" type="button" role="switch" aria-checked="false" id="sw-decay" aria-label="Decay and versioning"></button><p>Scores memories by use, archives the stale ones, and moves them to disk or S3 until needed.</p><div class="lk"><code>decay_v2</code><a class="u" href="/docs/decay-and-versioning/">Guide →</a></div></div>
+                <div class="lrow"><h3>Privacy{{ soon("privacy") }}</h3><span class="always">tools</span><p>Finds emails, phone numbers, and keys, redacts them before you store, and encrypts values. You call it on text before <code>add</code>.</p><div class="lk"><code>outhad_contextkit.memory.privacy</code><a class="u" href="/docs/privacy/">Guide →</a></div></div>
+              </div>
+              <div class="lgroup">
+                <p class="eyebrow">Ingest · what goes in</p>
+                <div class="lrow"><h3>Chunking{{ soon("chunking") }}</h3><button class="switch" type="button" role="switch" aria-checked="false" id="sw-chunking" aria-label="Chunking"></button><p>Splits long texts into overlapping chunks and merges neighbours back at search time.</p><div class="lk"><code>chunking</code><a class="u" href="/docs/chunking/">Guide →</a></div></div>
+                <div class="lrow"><h3>Multimodal{{ soon("multimodal") }}</h3><button class="switch" type="button" role="switch" aria-checked="false" id="sw-vision" aria-label="Multimodal"></button><p>A vision model describes each image, and the description is remembered like any other message.</p><div class="lk"><code>enable_vision</code><a class="u" href="/docs/multimodal/">Guide →</a></div></div>
+              </div>
+            </div>
+            <div class="cfg">
+              <pre id="cfg-code" aria-live="polite"><code><span class="ln"><span class="k">from</span> outhad_contextkit <span class="k">import</span> Memory</span><span class="ln"> </span><span class="ln">memory = Memory.from_config({</span><span class="ln">    <span class="s">"vector_store"</span>: {<span class="s">"provider"</span>: <span class="s">"qdrant"</span>},</span><span class="ln">    <span class="s">"context_graph"</span>: {<span class="s">"enabled"</span>: <span class="k">True</span>},</span><span class="ln">})</span></code></pre>
+              <p class="cfg-note" id="cfg-note"><strong>Context graph is on.</strong> Turn any layer on or off to see the config change.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="sec" id="where-it-fits">
+          <div class="sec-head">
+            <p class="eyebrow">Where it fits</p>
+            <h2>Most products use a few kinds of memory and a layer or two</h2>
+            <p class="legend">Common combinations of <span class="k">kinds of memory</span> and <span class="l">layers</span>.</p>
+          </div>
+          <div class="uses">
+            <article class="use"><h3>Support agents</h3><p>Remember each customer's products, past tickets, and preferences, so nobody explains twice. Answers marked helpful rank higher next time.</p><div class="tags"><span class="k">user</span><span class="k">session</span><span class="k">document</span><span class="l">personalized retrieval</span></div></article>
+            <article class="use"><h3>Personal assistants</h3><p>Keep up with tastes and routines that change over months. Old facts are updated rather than contradicted, and the ones nobody uses fade.</p><div class="tags"><span class="k">user</span><span class="k">procedural</span><span class="k">visual</span><span class="l">decay</span></div></article>
+            <article class="use"><h3>Coding and DevOps agents</h3><p>Answer “what changed before it broke?” from deploys, incidents, and fixes over time, with the runbooks close at hand.</p><div class="tags"><span class="k">episodic</span><span class="k">relational</span><span class="k">document</span><span class="l">graph memory</span></div></article>
+            <article class="use"><h3>Multi-agent systems</h3><p>A researcher, a planner, and an executor share findings on one job through a common run, and each keeps its own lessons.</p><div class="tags"><span class="k">agent</span><span class="k">session</span><span class="k">procedural</span><span class="l">context graph</span></div></article>
+            <article class="use"><h3>Software for many companies</h3><p>Give every customer organisation its own memory, with departments, roles, and exports, from a single store.</p><div class="tags"><span class="l">tenants</span><span class="k">user</span><span class="l">privacy</span><span class="l">decay</span></div></article>
+            <article class="use"><h3>Health, finance, and legal</h3><p>Redact what must not be stored, keep a record of every change, and delete a person's memories when they ask.</p><div class="tags"><span class="l">privacy</span><span class="k">change history</span><span class="l">tenants</span><span class="k">user</span></div></article>
+          </div>
+        </section>
+
+        <section class="sec" id="providers">
+          <div class="sec-head">
+            <p class="eyebrow">Providers</p>
+            <h2>Your models, your store</h2>
+            <p>Configured with one dictionary. Swap any part without touching the rest of your code.</p>
+          </div>
+          <div class="prov">
+            <div><p class="pnum">15<span>LLMs</span></p><p class="names"><b>OpenAI</b><small>default</small>, Anthropic, Gemini, Azure OpenAI, AWS Bedrock, Groq, Together, DeepSeek, xAI, Ollama, LM Studio, vLLM, LiteLLM, and more</p></div>
+            <div><p class="pnum">10<span>embedders</span></p><p class="names"><b>OpenAI</b><small>default</small>, Azure OpenAI, Gemini, Vertex AI, Hugging Face, Ollama, Together, LM Studio, AWS Bedrock, LangChain</p></div>
+            <div><p class="pnum">16<span>vector stores</span></p><p class="names"><b>Qdrant</b><small>default</small>, pgvector, Chroma, Pinecone, Weaviate, Milvus, MongoDB, Redis, Elasticsearch, OpenSearch, FAISS, Supabase, and more</p></div>
+            <div><p class="pnum">3<span>graph stores</span></p><p class="names">Neo4j, Memgraph, and AWS Neptune, for graph memory and the context graph's Neo4j backend</p></div>
+          </div>
+          <p class="more"><a class="u" href="/docs/providers/">All providers and their settings →</a><a class="u" href="/docs/providers/#run-everything-locally">Run everything locally with Ollama →</a></p>
+        </section>
+
+        <section class="sec" id="get-started">
+          <div class="sec-head">
+            <p class="eyebrow">Get started</p>
+            <h2>Four steps to an agent that remembers</h2>
+          </div>
+          <div class="start">
+            <ol class="steps">
+              <li><span><strong>Install</strong> with <code>{{ library.install }}</code>. Python 3.9 or newer.</span></li>
+              <li><span><strong>Set a model key</strong> with <code>export OPENAI_API_KEY=sk-…</code>. OpenAI is the default; Anthropic, Gemini, Groq, Ollama, and others are a config change away.</span></li>
+              <li><span><strong>Store what the user says</strong> with <code>memory.add(messages, user_id="alice")</code>.</span></li>
+              <li><span><strong>Search before each reply</strong> with <code>memory.search(query, user_id="alice")</code>, and put the results in your prompt.</span></li>
+            </ol>
+            <pre class="hl"><code>{{ quickstart | python }}</code></pre>
+          </div>
+          <p class="more"><a class="u" href="/docs/quickstart/">Read the quickstart →</a><a class="u" href="/docs/">Browse the docs →</a></p>
         </section>
       </main>
 {% endblock %}

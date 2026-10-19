@@ -25,6 +25,7 @@
         </aside>
 
         <article>
+          {% for section in nav %}{% for item in section["items"] %}{% if item.current %}<p class="eyebrow">{{ section.title }}</p>{% endif %}{% endfor %}{% endfor %}
           <h1>{{ page.title }}</h1>
           {% if page.description %}
           <p class="tagline">{{ page.description }}</p>

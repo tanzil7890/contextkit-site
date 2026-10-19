@@ -12,19 +12,21 @@
     <meta property="og:title" content="{{ self.title() }}" />
     <meta property="og:description" content="{{ self.description() }}" />
     <meta name="twitter:card" content="summary" />
-    <meta name="theme-color" content="#0c0c0e" />
+    <meta name="theme-color" content="#f1f3f6" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0c1017" media="(prefers-color-scheme: dark)" />
     <link rel="icon" href="/static/favicon.svg?v={{ asset_version }}" type="image/svg+xml" />
+    <link rel="preload" href="/static/recursive-latin.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="/static/site.css?v={{ asset_version }}" />
   </head>
   <body class="{% block body_class %}{% endblock %}">
     <div class="wrap">
-      <header>
+      <header class="top">
         <a class="brand" href="/">context<span>kit</span>{% block brand_suffix %}{% endblock %}</a>
-        <nav>
+        <nav aria-label="Main">
           {% set section = path.split("/")[1] %}
           <a href="/docs/"{% if section == "docs" %} class="active" aria-current="page"{% endif %}>Docs</a>
           <a href="/changelog/"{% if section == "changelog" %} class="active" aria-current="page"{% endif %}>Changelog</a>
-          <a href="{{ library.pypi_url }}">PyPI</a>
+          <a class="opt" href="{{ library.pypi_url }}">PyPI</a>
           <a href="https://github.com/{{ site.repo }}">GitHub</a>
         </nav>
       </header>
