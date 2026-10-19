@@ -46,7 +46,7 @@ The build fails on a broken internal link or anchor, or on a `python` code block
 site.toml              site settings, packages, sidebar order
 build.py               the generator
 templates/             home.html (landing page), doc.html, changelog.html, base.html, 404.html
-static/                site.css, site.js, favicon.svg
+static/                site.css, site.js, favicon.svg, and the Recursive font (recursive-latin.woff2, SIL OFL in recursive-OFL.txt)
 content/docs/          one Markdown file per guide
 content/changelog/     release notes: library/<version>.md, sdk/<version>.md
 content/snippets/      code shown on the landing page
